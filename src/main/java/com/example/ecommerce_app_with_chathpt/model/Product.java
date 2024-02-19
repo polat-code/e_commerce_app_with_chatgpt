@@ -3,6 +3,7 @@ package com.example.ecommerce_app_with_chathpt.model;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -16,7 +17,7 @@ public class Product {
     @Id
     private String id;
 
-    @Field
+    @DBRef
     private List<AttributeValue> attributes;
     @Field
     private Price price;
@@ -32,4 +33,5 @@ public class Product {
     private String title;
     @Field
     private String thumbnailImage;
+
 }

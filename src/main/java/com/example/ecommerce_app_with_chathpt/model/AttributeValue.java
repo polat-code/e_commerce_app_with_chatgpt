@@ -5,8 +5,10 @@ package com.example.ecommerce_app_with_chathpt.model;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 @Data
 @Builder
@@ -17,7 +19,7 @@ public class AttributeValue {
     private String id;
 
 
-    @Field(name = "attribute")
+    @DBRef
     private Attribute attribute;
 
     @Field(name = "value")
