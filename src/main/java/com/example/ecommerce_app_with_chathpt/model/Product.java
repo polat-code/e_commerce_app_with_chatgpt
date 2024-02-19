@@ -1,36 +1,35 @@
-package com.example.elasticchat.model;
+package com.example.ecommerce_app_with_chathpt.model;
 
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
 
 @Data
 @Builder
-@Document(indexName = "products")
+@Document(collection = "products")
 public class Product {
 
     @Id
     private String id;
 
-    @Field(type = FieldType.Nested)
+    @Field
     private List<AttributeValue> attributes;
-    @Field(type = FieldType.Nested)
+    @Field
     private Price price;
-    @Field(type = FieldType.Boolean)
+    @Field
     private boolean inStock;
-    @Field(type = FieldType.Text)
+    @Field
     private String url;
-    @Field(type = FieldType.Text)
+    @Field
     private String brand;
-    @Field(type = FieldType.Text)
+    @Field
     private String breadCrumbs;
-    @Field(type = FieldType.Text)
+    @Field
     private String title;
-    @Field(type = FieldType.Text)
+    @Field
     private String thumbnailImage;
 }

@@ -1,4 +1,4 @@
-package com.example.elasticchat.model;
+package com.example.ecommerce_app_with_chathpt.model;
 
 
 import lombok.Builder;

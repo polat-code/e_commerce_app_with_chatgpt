@@ -1,23 +1,21 @@
-package com.example.elasticchat.model;
+package com.example.ecommerce_app_with_chathpt.model;
 
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.List;
 
 @Data
 @Builder
-@Document(indexName = "attribute")
+@Document(collection = "attribute")
 public class Attribute {
 
     @Id
     private String id;
 
-    @Field(type = FieldType.Text, name = "name")
+    @Field(name = "name")
     private String name;
 
 
