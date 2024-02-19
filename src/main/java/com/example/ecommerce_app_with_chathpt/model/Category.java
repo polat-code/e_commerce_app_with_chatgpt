@@ -15,14 +15,12 @@ public class Category {
     @Id
     private String id;
 
+    @Field(name = "category_name")
+    private String categoryName;
+
     @DBRef
-    private String category;
-
-    // You can add the necessary Elasticsearch annotations
-
-    @Field(name = "parent_category_id")
     private int parentCategoryId;
 
 
-    // Constructors, Getters, and Setters
+
 }
