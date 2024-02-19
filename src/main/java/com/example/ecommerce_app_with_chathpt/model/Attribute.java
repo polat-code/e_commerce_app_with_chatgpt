@@ -3,6 +3,7 @@ package com.example.ecommerce_app_with_chathpt.model;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -17,6 +18,9 @@ public class Attribute {
 
     @Field(name = "name")
     private String name;
+
+    @DBRef
+    private Category category;
 
 
 }
