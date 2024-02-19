@@ -1,7 +1,5 @@
 package com.example.ecommerce_app_with_chathpt.model;
 
-
-
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -10,19 +8,20 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @Builder
-@Document(collection = "product_attribute_value")
-public class AttributeValue {
+@Document(collection = "category")
+public class Category {
 
     @Id
     private String id;
 
+    @Field(name = "category")
+    private String category;
 
-    @Field(name = "attribute")
-    private Attribute attribute;
+    // You can add the necessary Elasticsearch annotations
 
-    @Field(name = "value")
-    private String value;
-
+    @Field(name = "parent_category_id")
+    private int parentCategoryId;
 
 
+    // Constructors, Getters, and Setters
 }
