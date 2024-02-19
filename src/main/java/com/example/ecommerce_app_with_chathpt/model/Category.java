@@ -19,7 +19,7 @@ public class Category {
     private String categoryName;
 
     @DBRef
-    private int parentCategoryId;
+    private Category parentCategoryId;
 
 
 

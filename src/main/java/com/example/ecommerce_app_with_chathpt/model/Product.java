@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 @Builder
 @Document(collection = "products")
+
 public class Product {
 
     @Id
