@@ -4,6 +4,7 @@ import com.example.ecommerce_app_with_chathpt.model.Category;
 import com.example.ecommerce_app_with_chathpt.model.request.CategoryRequest;
 import com.example.ecommerce_app_with_chathpt.service.CategoryService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,14 +23,14 @@ public class CategoryController {
     }
 
     @PostMapping("")
-    public void saveAllCategory(@RequestBody List<CategoryRequest> categoryList)
+    public ResponseEntity<?> saveAllCategory(@RequestBody List<CategoryRequest> categoryList)
     {
-        categoryService.saveAllCategory(categoryList);
+        return categoryService.saveAllCategory(categoryList);
     }
 
-    @DeleteMapping("/{categoryId}")
-    public void deleteByCategoryId(@PathVariable String categoryId){
-        categoryService.deleteByCategoryId(categoryId);
+    @DeleteMapping("/{categoryName}")
+    public void deleteByCategoryId(@PathVariable String categoryName){
+        categoryService.deleteByCategoryId(categoryName);
     }
 
 

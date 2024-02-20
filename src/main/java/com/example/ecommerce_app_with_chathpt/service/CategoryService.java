@@ -5,6 +5,9 @@ import com.example.ecommerce_app_with_chathpt.model.Category;
 import com.example.ecommerce_app_with_chathpt.model.request.CategoryRequest;
 import lombok.AllArgsConstructor;
 
+import org.springframework.http.HttpStatus;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +24,7 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
-    public void saveAllCategory(List<CategoryRequest> categoryList){
+    public ResponseEntity<?> saveAllCategory(List<CategoryRequest> categoryList){
 
         for (CategoryRequest categoryRequest : categoryList) {
             Optional<Category> optionalCategory = categoryRepository.findByCategoryName(categoryRequest.getName());
@@ -35,6 +38,7 @@ public class CategoryService {
                 checkParentAndSaveCategory(categoryRequest, addedCategory);
             }
         }
+        return new ResponseEntity<>("Save operation is done by successfully", HttpStatus.ACCEPTED);
     }
 
     private void checkParentAndSaveCategory(CategoryRequest categoryRequest, Category category) {
@@ -52,7 +56,12 @@ public class CategoryService {
         categoryRepository.save(category);
     }
 
-    public void deleteByCategoryId(String categoryId) {
-        categoryRepository.deleteById(categoryId);
+    public void deleteByCategoryId(String categoryName) {
+
+        if(categoryName!=null) {
+            categoryRepository.deleteById(categoryRepository.findByCategoryName(categoryName).get().getId());
+        }
+        else
+            throw new RuntimeException();
     }
 }
