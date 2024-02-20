@@ -1,11 +1,11 @@
 package com.example.ecommerce_app_with_chathpt.service;
 
-import com.example.ecommerce_app_with_chathpt.dto.ProductRepository;
+import com.example.ecommerce_app_with_chathpt.repository.ProductRepository;
 import com.example.ecommerce_app_with_chathpt.model.Attribute;
 import com.example.ecommerce_app_with_chathpt.model.AttributeValue;
 import com.example.ecommerce_app_with_chathpt.model.Category;
 import com.example.ecommerce_app_with_chathpt.model.Product;
-import com.example.ecommerce_app_with_chathpt.model.request.ProductRequest;
+import com.example.ecommerce_app_with_chathpt.model.dto.request.ProductRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -82,7 +82,7 @@ public class ProductService {
                     attributes(attributeValueList)
                     .url(productRequest.getUrl())
                     .title(productRequest.getTitle())
-
+                    .category(foundCategory.get())
                     .thumbnailImage(productRequest.getThumbnailImage())
                     .price(productRequest.getPrice())
                     .inStock(productRequest.getInStock())

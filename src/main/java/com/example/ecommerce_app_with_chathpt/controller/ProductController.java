@@ -1,7 +1,7 @@
 package com.example.ecommerce_app_with_chathpt.controller;
 
 import com.example.ecommerce_app_with_chathpt.model.Product;
-import com.example.ecommerce_app_with_chathpt.model.request.ProductRequest;
+import com.example.ecommerce_app_with_chathpt.model.dto.request.ProductRequest;
 import com.example.ecommerce_app_with_chathpt.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

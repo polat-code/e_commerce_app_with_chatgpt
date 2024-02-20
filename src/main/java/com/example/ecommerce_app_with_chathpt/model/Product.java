@@ -25,6 +25,9 @@ public class Product {
     private List<AttributeValue> attributes;
     @Field
     private Double price;
+
+    @DBRef
+    private Category category;
     @Field
     private boolean inStock;
     @Field

@@ -1,8 +1,8 @@
 package com.example.ecommerce_app_with_chathpt.service;
 
-import com.example.ecommerce_app_with_chathpt.dto.CategoryRepository;
+import com.example.ecommerce_app_with_chathpt.repository.CategoryRepository;
 import com.example.ecommerce_app_with_chathpt.model.Category;
-import com.example.ecommerce_app_with_chathpt.model.request.CategoryRequest;
+import com.example.ecommerce_app_with_chathpt.model.dto.request.CategoryRequest;
 import lombok.AllArgsConstructor;
 
 import org.springframework.http.HttpStatus;
