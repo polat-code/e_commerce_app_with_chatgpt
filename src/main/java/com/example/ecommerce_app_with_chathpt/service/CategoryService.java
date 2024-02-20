@@ -64,4 +64,10 @@ public class CategoryService {
         else
             throw new RuntimeException();
     }
+
+
+    public Optional<Category> getAllByCategoryName(String categoryName) {
+
+        return categoryRepository.findByCategoryName(categoryName);
+    }
 }

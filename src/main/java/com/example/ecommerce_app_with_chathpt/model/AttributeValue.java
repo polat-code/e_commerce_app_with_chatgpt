@@ -10,6 +10,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 
+import java.util.List;
+
 @Data
 @Builder
 @Document(collection = "product_attribute_value")
@@ -20,7 +22,7 @@ public class AttributeValue {
 
 
     @DBRef
-    private Attribute attribute;
+    private List<Attribute> attribute;
 
     @Field(name = "value")
     private String value;
