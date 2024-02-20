@@ -26,4 +26,11 @@ public class CategoryController {
     {
         categoryService.saveAllCategory(categoryList);
     }
+
+    @DeleteMapping("/{categoryId}")
+    public void deleteByCategoryId(@PathVariable String categoryId){
+        categoryService.deleteByCategoryId(categoryId);
+    }
+
+
 }

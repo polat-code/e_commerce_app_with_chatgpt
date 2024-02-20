@@ -4,7 +4,7 @@ import com.example.ecommerce_app_with_chathpt.dto.CategoryRepository;
 import com.example.ecommerce_app_with_chathpt.model.Category;
 import com.example.ecommerce_app_with_chathpt.model.request.CategoryRequest;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,32 +23,36 @@ public class CategoryService {
 
     public void saveAllCategory(List<CategoryRequest> categoryList){
 
-       for (int i=0 ; i < categoryList.size();i++){
-           Optional<Category> optionalCategory = categoryRepository.findByCategoryName(categoryList.get(i).getName());
-           if(optionalCategory.isPresent()){
-               Optional<Category> optionalParentCategory = categoryRepository.findByCategoryName(categoryList.get(i).getParent());
-               if (optionalParentCategory.isEmpty()){
-                   Category category = optionalCategory.get();
-                   Category newParentCategory = Category.builder().categoryName(categoryList.get(i).getName()).build();
-                   Category responseNewParentCategory = categoryRepository.save(newParentCategory)
-                   category.setParentCategoryId(responseNewParentCategory);
-                   categoryRepository.save(category);
-               }
-           }
-           else {
-
-           }
-
-
-           categoryRepository.findByCategoryName(categoryList);
-           var category = Category.builder().categoryName(categoryList.get(i).getName());
-
-
-
-       }
-        //categoryRepository.saveAll(categoryList);
-
-
+        for (CategoryRequest categoryRequest : categoryList) {
+            Optional<Category> optionalCategory = categoryRepository.findByCategoryName(categoryRequest.getName());
+            if (optionalCategory.isPresent()) {
+                Category category = optionalCategory.get();
+                checkParentAndSaveCategory(categoryRequest, category);
+            }
+            else {
+                Category addedCategory = new Category();
+                addedCategory.setCategoryName(categoryRequest.getName());
+                checkParentAndSaveCategory(categoryRequest, addedCategory);
+            }
+        }
     }
 
+    private void checkParentAndSaveCategory(CategoryRequest categoryRequest, Category category) {
+        if (categoryRequest.getParent() != null) {
+            Optional<Category> optionalParentCategory = categoryRepository.findByCategoryName(categoryRequest.getParent());
+            if (optionalParentCategory.isPresent()) {
+                category.setParentCategory(optionalParentCategory.get());
+            } else {
+                Category newParentCategory = Category.builder().categoryName(categoryRequest.getParent()).build();
+                Category responseNewParentCategory = categoryRepository.save(newParentCategory);
+                category.setParentCategory(responseNewParentCategory);
+            }
+
+        }
+        categoryRepository.save(category);
+    }
+
+    public void deleteByCategoryId(String categoryId) {
+        categoryRepository.deleteById(categoryId);
+    }
 }
