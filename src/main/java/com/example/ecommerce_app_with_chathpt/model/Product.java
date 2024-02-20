@@ -24,7 +24,7 @@ public class Product {
     @DBRef
     private List<AttributeValue> attributes;
     @Field
-    private Price price;
+    private Double price;
     @Field
     private boolean inStock;
     @Field

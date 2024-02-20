@@ -8,9 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-@NoArgsConstructor
 @Service
 @AllArgsConstructor
 public class AttributeValueService {
@@ -25,4 +26,12 @@ public class AttributeValueService {
     }
 
 
+    public AttributeValue createAndSaveAttributeValueObject(Attribute attribute,String keyValue) {
+
+        AttributeValue attributeValue = AttributeValue.builder()
+                .attribute(attribute)
+                .value(keyValue)
+                .build();
+        return attributeValueRepository.save(attributeValue);
+    }
 }

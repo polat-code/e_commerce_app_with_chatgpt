@@ -12,7 +12,6 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-@NoArgsConstructor
 public class AttributeService {
 
     private AttributeRepository attributeRepository;
@@ -31,5 +30,10 @@ public class AttributeService {
 
     public Optional<Attribute> findByCategoryAndName(Category foundCategory, String key) {
         return attributeRepository.findByCategoryAndName(foundCategory,key);
+    }
+
+    public Attribute createAndSaveAttribute(Optional<Category> foundCategory, String key) {
+        Attribute attribute = Attribute.builder().category(foundCategory.get()).name(key).build();
+        return attributeRepository.save(attribute);
     }
 }

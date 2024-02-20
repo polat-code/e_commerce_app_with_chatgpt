@@ -43,11 +43,13 @@ public class ProductService {
             //List<Attribute> foundAttributeList = attributeService.findByCategory(foundCategory.get());
 
 
-            for(int i = 0; i < productRequest.getAttributeRequests().size(); i++){
-                String key = productRequest.getAttributeRequests().get(i).getKey();
-                String keyValue = productRequest.getAttributeRequests().get(i).getValue();
+            for(int i = 0; i < productRequest.getAttributes().size(); i++){
+                String key = productRequest.getAttributes().get(i).getKey();
+                String keyValue = productRequest.getAttributes().get(i).getValue();
 
                 // TODO Exception for found category if it is empty
+
+
 
                 Optional<Attribute> optionalAttribute = attributeService.findByCategoryAndName(foundCategory.get(),key);
 
@@ -57,7 +59,8 @@ public class ProductService {
                         attributeValueList.add(optionalAttributeValue.get());
                     }
                     else {
-                        AttributeValue attributeValue =  attributeValueService.createAndSaveAttributeValueObject();
+                        AttributeValue attributeValue =  attributeValueService.createAndSaveAttributeValueObject(optionalAttribute.get(),keyValue);
+                        attributeValueList.add(attributeValue);
                     }
 
 
@@ -66,16 +69,20 @@ public class ProductService {
                 else{
                     // yoksa
 
+                    Attribute attribute = attributeService.createAndSaveAttribute(foundCategory,key);
+                    AttributeValue attributeValue =  attributeValueService.createAndSaveAttributeValueObject(attribute,keyValue);
+                    attributeValueList.add(attributeValue);
+
+
                 }
 
 
             }
             Product product = Product.builder().
-                    attributes(attributeValueList).
-                    brand(productRequest.getBrand())
+                    attributes(attributeValueList)
                     .url(productRequest.getUrl())
                     .title(productRequest.getTitle())
-                    .breadCrumbs(productRequest.getBreadCrumbs())
+
                     .thumbnailImage(productRequest.getThumbnailImage())
                     .price(productRequest.getPrice())
                     .inStock(productRequest.getInStock())

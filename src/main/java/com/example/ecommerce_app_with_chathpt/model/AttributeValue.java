@@ -22,7 +22,7 @@ public class AttributeValue {
 
 
     @DBRef
-    private List<Attribute> attribute;
+    private Attribute attribute;
 
     @Field(name = "value")
     private String value;
