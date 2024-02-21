@@ -19,6 +19,10 @@ public class AttributeService {
         return attributeRepository.findAll();
     }
 
+    public List<Attribute> getAllAttributesByCategory(Category category){
+        return attributeRepository.findAllByCategory(category);
+    }
+
     public List<Attribute> findByCategory(Category category){
         return attributeRepository.findByCategory(category);
     }

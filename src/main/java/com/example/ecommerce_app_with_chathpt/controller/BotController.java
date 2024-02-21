@@ -27,7 +27,7 @@ public class BotController {
 
 
 
-    @GetMapping("/chat")
+    @GetMapping("")
     public String chat(@RequestBody String prompt) {
         ChatGPTRequest request = new ChatGPTRequest(openAIConfig.getOpenai_model(), prompt);
         ChatGPTResponse chatGPTResponse = restTemplate.postForObject(openAIConfig.getOpenai_api_url(),request, ChatGPTResponse.class);

@@ -16,4 +16,7 @@ public interface AttributeRepository extends MongoRepository<Attribute,String> {
     Attribute findByName(String key);
 
     Optional<Attribute> findByCategoryAndName(Category category , String key);
+
+    List<Attribute> findAllByCategory(Category category);
+
 }

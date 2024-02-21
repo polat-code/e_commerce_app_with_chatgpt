@@ -7,6 +7,7 @@ import com.example.ecommerce_app_with_chathpt.model.AttributeValue;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,5 +31,9 @@ public class AttributeValueService {
                 .value(keyValue)
                 .build();
         return attributeValueRepository.save(attributeValue);
+    }
+
+    public List<AttributeValue> getAllByAttribute(Attribute attribute) {
+        return attributeValueRepository.findAllByAttribute(attribute);
     }
 }

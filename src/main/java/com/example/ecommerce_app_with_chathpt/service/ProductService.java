@@ -38,7 +38,7 @@ public class ProductService {
         for (ProductRequest productRequest : productRequestList) {
             List<AttributeValue> attributeValueList= new ArrayList<>();
 
-            Optional<Category> foundCategory = categoryService.getAllByCategoryName(productRequest.getCategoryName());
+            Optional<Category> foundCategory = categoryService.getCategoryByCategoryName(productRequest.getCategoryName());
 
             //List<Attribute> foundAttributeList = attributeService.findByCategory(foundCategory.get());
 
