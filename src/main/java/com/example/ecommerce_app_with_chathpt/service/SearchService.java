@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -27,16 +28,22 @@ public class SearchService {
 
     public ResponseEntity<Object> searchByRequest(String message){
 
-        List<Category> getAllCategoriesByParent = categoryService.findByParentCategoryIsNull();
+
+        List<String> getAllCategoriesByParent = categoryService.findByParentCategoryIsNull().stream()
+                .map(Category::toString)
+                .collect(Collectors.toList());
         Optional<Category> optionalCategory = Optional.empty();
 
+        //TODO Eğer bi alt seviyesinde ilişkili kategori bulamazsa o kategori kalamsını sağlayan bir yapı oluştur
         boolean flag=true;
         while(flag) {
-            String manipulatedMessage ="These are categories of my system "+ getAllCategoriesByParent.toString()+".according to user request, return just only the best suitable categoryName.Please do not send a sentence, must only be categoryName.If any of the categories from my system doesn't match with User Request then must return only empty string. User Request = "+ message;
-            String categoryResponse = chatGPTService.categoryExtraction(manipulatedMessage);
+            String manipulatedMessage ="These are categories of my system "+ getAllCategoriesByParent+".according to user request, return just only the best suitable categoryName.Please do not send a sentence, must only be categoryName. User Request = "+ message;
+            String categoryResponse = chatGPTService.sendRequestToChatGPT(manipulatedMessage);
             optionalCategory = categoryService.getCategoryByCategoryName(categoryResponse);
             if (optionalCategory.isPresent()) {
-                getAllCategoriesByParent = categoryService.getCategoryByParentCategory(optionalCategory.get());
+                getAllCategoriesByParent = categoryService.getCategoryByParentCategory(optionalCategory.get()).stream()
+                        .map(Category::toString)
+                        .collect(Collectors.toList());
                 if(getAllCategoriesByParent.isEmpty()) {
                     flag = false;
 
@@ -49,7 +56,7 @@ public class SearchService {
         }
         // TODO Category checks
         Category category = optionalCategory.get();
-        // Bütün key , valueları bul lan!
+        // Bütün key , valueları bul!
 
 
         List<Attribute> attributeList = attributeService.getAllAttributesByCategory(category);
@@ -81,8 +88,28 @@ public class SearchService {
 
         String prompt = attributeKeyValueJsonMapperList.toString();
 
-        String manipulatedPrompt = "Give me objects that are the best suitable from Attributes according to User Request in format that Object of Attributes is sent into array" +"User Request:"+ message + ". Attributes:"+ prompt + ".";
-        System.out.println(prompt);
+        String manipulatedPrompt = "I have a user request and I have the features of a category." +
+                " I need to extract the features of this category according to the user's request." +
+                " Do not return to me features that are not requested by the user." +
+                " You just have to return me the features the user requested in the format I sent them.must return only array" +
+                "For example, User Request: I want to buy for a Nail Care Products,Features:{" +
+                "    \"features\": [" +
+                "        {\"key\": \"Item Weight\", \"values\": [\"23 pounds\"]}," +
+                "        {\"key\": \"Country of Origin\", \"values\": [\"China\"]}" +
+                "    ]" +
+                "}" +
+                "Response: []" +
+                "For example, User Request: I want to buy for a 23 pound and American Nail Care Products,Features:{" +
+                "    \"features\": [" +
+                "        {\"key\": \"Item Weight\", \"values\": [\"23 pounds\"]}," +
+                "        {\"key\": \"Country of Origin\", \"values\": [\"China\"]}" +
+                "    ]" +
+                "}" +
+                "Response:  [{\"key\": \"Item Weight\", \"values\": [\"23 pounds\"]},\"]"+
+                "If there are no features, send me an empty string." +
+                "Notice that returned features are from my features." +"User Request:"+ message + ". Features:"+ prompt + ".";
+        String attributeResponseFromChatGPT = chatGPTService.sendRequestToChatGPT(manipulatedPrompt);
+        System.out.println(attributeResponseFromChatGPT);
 
 
         return new ResponseEntity<>(prompt, HttpStatus.OK);

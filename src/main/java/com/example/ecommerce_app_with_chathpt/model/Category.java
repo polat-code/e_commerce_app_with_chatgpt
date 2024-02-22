@@ -25,5 +25,8 @@ public class Category {
     @DBRef
     private Category parentCategory;
 
-
+    @Override
+    public String toString(){
+        return "\""+categoryName+"\"";
+    }
 }
