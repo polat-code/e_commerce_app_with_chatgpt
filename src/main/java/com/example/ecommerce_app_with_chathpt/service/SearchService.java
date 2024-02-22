@@ -54,9 +54,13 @@ public class SearchService {
             }
 
         }
+
+        if(optionalCategory.isEmpty())
+        {
+            throw new RuntimeException("Category is not found ");
+        }
         // TODO Category checks
         Category category = optionalCategory.get();
-        // Bütün key , valueları bul!
 
 
         List<Attribute> attributeList = attributeService.getAllAttributesByCategory(category);
