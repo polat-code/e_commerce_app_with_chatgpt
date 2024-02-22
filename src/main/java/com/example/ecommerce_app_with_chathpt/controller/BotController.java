@@ -5,8 +5,9 @@ import com.example.ecommerce_app_with_chathpt.config.OpenAIConfig;
 import com.example.ecommerce_app_with_chathpt.model.dto.request.ChatGPTRequest;
 import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatGPTResponse;
 import com.example.ecommerce_app_with_chathpt.service.BotService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
-import lombok.Value;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,13 +32,14 @@ public class BotController {
     public String chat(@RequestBody String prompt) {
         ChatGPTRequest request = new ChatGPTRequest(openAIConfig.getOpenai_model(), prompt);
         ChatGPTResponse chatGPTResponse = restTemplate.postForObject(openAIConfig.getOpenai_api_url(),request, ChatGPTResponse.class);
+        assert chatGPTResponse != null;
         return chatGPTResponse.getChoices().get(0).getMessage().getContent();
     }
 
 
 
     @GetMapping("/intent")
-    public String intentDetect(@RequestBody String prompt) {
+    public String intentDetect(@RequestBody String prompt) throws JsonProcessingException {
 
         return  botService.intentExtraction(prompt);
     }

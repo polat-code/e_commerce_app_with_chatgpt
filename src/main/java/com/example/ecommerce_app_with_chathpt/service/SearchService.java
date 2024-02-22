@@ -3,12 +3,17 @@ package com.example.ecommerce_app_with_chathpt.service;
 import com.example.ecommerce_app_with_chathpt.model.Attribute;
 import com.example.ecommerce_app_with_chathpt.model.AttributeValue;
 import com.example.ecommerce_app_with_chathpt.model.Category;
+import com.example.ecommerce_app_with_chathpt.util.mapper.GptAttributeAndAttributeValuesJsonResponseToMapper;
 import com.example.ecommerce_app_with_chathpt.util.mapper.SearchAttributeKeyValueJsonMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,9 +29,10 @@ public class SearchService {
     private AttributeService attributeService;
 
 
+
     private ChatGPTService chatGPTService;
 
-    public ResponseEntity<Object> searchByRequest(String message){
+    public ResponseEntity<Object> searchByRequest(String message) {
 
 
         List<String> getAllCategoriesByParent = categoryService.findByParentCategoryIsNull().stream()
@@ -43,7 +49,7 @@ public class SearchService {
             if (optionalCategory.isPresent()) {
                 getAllCategoriesByParent = categoryService.getCategoryByParentCategory(optionalCategory.get()).stream()
                         .map(Category::toString)
-                        .collect(Collectors.toList());
+                        .toList();
                 if(getAllCategoriesByParent.isEmpty()) {
                     flag = false;
 
@@ -113,7 +119,23 @@ public class SearchService {
                 "If there are no features, send me an empty string." +
                 "Notice that returned features are from my features." +"User Request:"+ message + ". Features:"+ prompt + ".";
         String attributeResponseFromChatGPT = chatGPTService.sendRequestToChatGPT(manipulatedPrompt);
+
         System.out.println(attributeResponseFromChatGPT);
+
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try{
+            List<GptAttributeAndAttributeValuesJsonResponseToMapper> attributeValuesJsonResponseToMapperList =
+                    objectMapper.readValue(attributeResponseFromChatGPT,new TypeReference<List<GptAttributeAndAttributeValuesJsonResponseToMapper>>(){});
+
+
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
 
 
         return new ResponseEntity<>(prompt, HttpStatus.OK);

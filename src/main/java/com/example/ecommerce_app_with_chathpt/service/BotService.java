@@ -2,9 +2,10 @@ package com.example.ecommerce_app_with_chathpt.service;
 
 
 import com.example.ecommerce_app_with_chathpt.config.OpenAIConfig;
-import com.example.ecommerce_app_with_chathpt.model.Category;
+
 import com.example.ecommerce_app_with_chathpt.model.dto.request.ChatGPTRequest;
 import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatGPTResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class BotService {
 
     private SearchService searchService;
 
-    public String intentExtraction(String message){
+    public String intentExtraction(String message) throws JsonProcessingException {
         String manipulatedMessage ="These are intents of my sentences = [search, login, register, buy,other]. If intent of message i will give you is one of these return just intent of that sentence. Sentence = " + message;
         ChatGPTRequest request = new ChatGPTRequest(openAIConfig.getOpenai_model(),manipulatedMessage);
         ChatGPTResponse chatGPTResponse = restTemplate.postForObject(openAIConfig.getOpenai_api_url(), request, ChatGPTResponse.class);
@@ -40,7 +41,7 @@ public class BotService {
     }
 
 
-    private ResponseEntity<String> intentDirector(String intent, String message){
+    private ResponseEntity<String> intentDirector(String intent, String message) throws JsonProcessingException {
         String category;
 
         if (intent.equals("login")){
