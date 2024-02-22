@@ -28,6 +28,7 @@ public class SearchService {
 
     private AttributeService attributeService;
 
+    private ProductSearchService productSearchService;
 
 
     private ChatGPTService chatGPTService;
@@ -116,19 +117,20 @@ public class SearchService {
                 "    ]" +
                 "}" +
                 "Response:  [{\"key\": \"Item Weight\", \"values\": [\"23 pounds\"]},\"]"+
-                "If there are no features, send me an empty string." +
+                " If there are no features, send me an empty string." +
                 "Notice that returned features are from my features." +"User Request:"+ message + ". Features:"+ prompt + ".";
         String attributeResponseFromChatGPT = chatGPTService.sendRequestToChatGPT(manipulatedPrompt);
-
+        attributeResponseFromChatGPT = attributeResponseFromChatGPT.replace("Response: ", "");
         System.out.println(attributeResponseFromChatGPT);
 
 
-
+        List<GptAttributeAndAttributeValuesJsonResponseToMapper> attributeValuesJsonResponseToMapperList = new ArrayList<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try{
-            List<GptAttributeAndAttributeValuesJsonResponseToMapper> attributeValuesJsonResponseToMapperList =
-                    objectMapper.readValue(attributeResponseFromChatGPT,new TypeReference<List<GptAttributeAndAttributeValuesJsonResponseToMapper>>(){});
+            attributeValuesJsonResponseToMapperList = objectMapper
+                    .readValue(attributeResponseFromChatGPT,
+                            new TypeReference<List<GptAttributeAndAttributeValuesJsonResponseToMapper>>(){});
 
 
         }
@@ -136,6 +138,22 @@ public class SearchService {
         {
             e.printStackTrace();
         }
+
+
+        List<GptAttributeAndAttributeValuesJsonResponseToMapper> attributeResponse =  attributeValuesJsonResponseToMapperList.stream().map(x -> new GptAttributeAndAttributeValuesJsonResponseToMapper(x.getKey(),x.getValues())).toList();
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         return new ResponseEntity<>(prompt, HttpStatus.OK);

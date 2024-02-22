@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -79,7 +80,7 @@ public class ProductService {
 
             }
             Product product = Product.builder().
-                    attributes(attributeValueList)
+                    attributeValues(attributeValueList)
                     .url(productRequest.getUrl())
                     .title(productRequest.getTitle())
                     .category(foundCategory.get())
@@ -95,4 +96,7 @@ public class ProductService {
         return ResponseEntity.ok("Product is added");
 
     }
+
+
+
 }

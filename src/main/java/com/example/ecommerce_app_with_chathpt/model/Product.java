@@ -22,7 +22,7 @@ public class Product {
     private String id;
 
     @DBRef
-    private List<AttributeValue> attributes;
+    private List<AttributeValue> attributeValues;
     @Field
     private Double price;
 
