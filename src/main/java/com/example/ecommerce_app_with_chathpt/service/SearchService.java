@@ -142,6 +142,7 @@ public class SearchService {
 
         List<GptAttributeAndAttributeValuesJsonResponseToMapper> attributeResponse =  attributeValuesJsonResponseToMapperList.stream().map(x -> new GptAttributeAndAttributeValuesJsonResponseToMapper(x.getKey(),x.getValues())).toList();
 
+        productSearchService.searchProduct(attributeResponse, category);
 
 
 
