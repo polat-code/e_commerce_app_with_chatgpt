@@ -8,9 +8,8 @@ import com.example.ecommerce_app_with_chathpt.util.mapper.GptAttributeAndAttribu
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
 @Service
 @AllArgsConstructor
 public class ProductSearchService {
@@ -42,13 +41,16 @@ public class ProductSearchService {
         //System.out.println(denemeAttributeValues.stream().map(attributeValues1 -> attributeValues1.stream().map(AttributeValue::getId).collect(Collectors.toList())).collect(Collectors.toList()));
         //System.out.println(attributeValues.stream().map(AttributeValue::getId).collect(Collectors.toList()));
         List<List<String>> matchedProductsForAllAttributeValues = new ArrayList<>();
+        Map<String,Integer> matchedProductsCounter = new HashMap<>();
         for (Product product: categoryProducts){
             List<String> matchedProducts = new ArrayList<>();
+            matchedProductsCounter.put(product.getId(),0);
             for (AttributeValue productAttributeValue :product.getAttributeValues()){
 
                 for (AttributeValue attributeValue: attributeValues){
                     if (productAttributeValue.equals(attributeValue)){
                         matchedProducts.add(product.getId());
+                        matchedProductsCounter.put(product.getId(),matchedProductsCounter.get(product.getId())+1);
                     }
                 }
 
@@ -57,9 +59,18 @@ public class ProductSearchService {
 
 
         }
-        System.out.println(matchedProductsForAllAttributeValues);
+
+        List<Map.Entry<String, Integer>> list = new ArrayList<>(matchedProductsCounter.entrySet());
+        list.sort(Map.Entry.<String, Integer>comparingByValue().reversed());
+
+        LinkedHashMap<String, Integer> sortedMap = new LinkedHashMap<>();
+        for (Map.Entry<String, Integer> entry : list) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
 
     }
+
+
 
 
 
