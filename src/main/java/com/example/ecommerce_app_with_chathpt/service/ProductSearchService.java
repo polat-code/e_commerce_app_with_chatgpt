@@ -67,6 +67,7 @@ public class ProductSearchService {
         for (Map.Entry<String, Integer> entry : list) {
             sortedMap.put(entry.getKey(), entry.getValue());
         }
+        System.out.println(sortedMap);
 
     }
 
