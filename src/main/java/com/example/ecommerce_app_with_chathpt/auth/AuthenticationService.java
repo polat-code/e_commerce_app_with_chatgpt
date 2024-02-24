@@ -3,12 +3,14 @@ package com.example.ecommerce_app_with_chathpt.auth;
 
 import com.example.ecommerce_app_with_chathpt.config.JwtService;
 import com.example.ecommerce_app_with_chathpt.model.User;
+import com.example.ecommerce_app_with_chathpt.service.EmailService;
 import com.example.ecommerce_app_with_chathpt.token.Token;
 import com.example.ecommerce_app_with_chathpt.token.TokenRepository;
 import com.example.ecommerce_app_with_chathpt.repository.UserRepository;
 import com.example.ecommerce_app_with_chathpt.token.TokenType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -19,9 +21,12 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
+    
+    private final EmailService emailService;
     private final UserRepository repository;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
@@ -36,15 +41,30 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .build();
-        User savedUser = repository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        saveUserToken(savedUser, jwtToken);
-        return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .build();
+
+        // Check email is already taken or not
+
+
+        // TODO : Send email implement email sender
+        User checkUserEmail = repository.findByEmail(request.getEmail()).get();
+
+        if(repository.existsById(checkUserEmail.getId())){
+            throw new RuntimeException();
+        }
+        else{
+            User savedUser = repository.save(user);
+            var jwtToken = jwtService.generateToken(user);
+            var refreshToken = jwtService.generateRefreshToken(user);
+            saveUserToken(savedUser, jwtToken);
+            return AuthenticationResponse.builder()
+                    .accessToken(jwtToken)
+                    .refreshToken(refreshToken)
+                    .build();
+        }
     }
+
+
+
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
