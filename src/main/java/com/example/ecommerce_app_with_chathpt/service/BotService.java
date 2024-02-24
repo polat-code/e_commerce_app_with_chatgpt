@@ -29,6 +29,7 @@ public class BotService {
 
     private SearchService searchService;
 
+    //TODO Give more examples to prompts
     public String intentExtraction(String message) throws JsonProcessingException {
         String manipulatedMessage ="These are intents of my sentences = [search, login, register, buy,other]. If intent of message i will give you is one of these return just intent of that sentence. Sentence = " + message;
         ChatGPTRequest request = new ChatGPTRequest(openAIConfig.getOpenai_model(),manipulatedMessage);
