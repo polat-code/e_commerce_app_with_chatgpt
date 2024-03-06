@@ -17,10 +17,10 @@ public class ChatGPTService {
     private RestTemplate restTemplate;
 
 
-    public String sendRequestToChatGPT(String message){
+    public String sendRequestToChatGPT(String message,String systemMessage){
 
 
-        ChatGPTRequest request = new ChatGPTRequest(openAIConfig.getOpenai_model(), message);
+        ChatGPTRequest request = new ChatGPTRequest(openAIConfig.getOpenai_model(), message, systemMessage);
         ChatGPTResponse chatGPTResponse = restTemplate.postForObject(openAIConfig.getOpenai_api_url(), request, ChatGPTResponse.class);
         return chatGPTResponse.getChoices().get(0).getMessage().getContent();
     }

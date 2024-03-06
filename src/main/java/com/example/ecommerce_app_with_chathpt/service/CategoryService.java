@@ -82,4 +82,8 @@ public class CategoryService {
 
         return categoryRepository.findByParentCategory(category);
     }
+
+    public Optional<Category> getCategoryByCategoryNameAndParentCategoryName(String categoryName, Category parentCategory){
+        return categoryRepository.findByCategoryNameAndParentCategory(categoryName,parentCategory);
+    }
 }

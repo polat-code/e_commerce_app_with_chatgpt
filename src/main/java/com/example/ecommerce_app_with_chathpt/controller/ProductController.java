@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -27,4 +28,10 @@ public class ProductController {
     public ResponseEntity<Object> saveAllProducts(@RequestBody List<ProductRequest> productRequestList){
         return productService.saveAllProducts(productRequestList);
     }
+
+    @GetMapping("/{id}")
+    private Optional<Product> getProductById(@PathVariable String id){
+        return productService.getProductById(id);
+    }
+
 }

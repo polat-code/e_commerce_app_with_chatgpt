@@ -29,11 +29,9 @@ public class BotController {
 
 
     @GetMapping("")
-    public String chat(@RequestBody String prompt) {
-        ChatGPTRequest request = new ChatGPTRequest(openAIConfig.getOpenai_model(), prompt);
-        ChatGPTResponse chatGPTResponse = restTemplate.postForObject(openAIConfig.getOpenai_api_url(),request, ChatGPTResponse.class);
-        assert chatGPTResponse != null;
-        return chatGPTResponse.getChoices().get(0).getMessage().getContent();
+    public void chat(@RequestBody String prompt) {
+
+
     }
 
 

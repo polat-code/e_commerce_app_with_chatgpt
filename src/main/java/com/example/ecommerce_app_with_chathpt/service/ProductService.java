@@ -102,12 +102,7 @@ public class ProductService {
     }
 
 
-
-
-
-
-
-
-
-
+    public Optional<Product> getProductById(String id) {
+        return productRepository.findById(id);
+    }
 }

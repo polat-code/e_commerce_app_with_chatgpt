@@ -31,8 +31,14 @@ public class BotService {
 
     //TODO Give more examples to prompts
     public String intentExtraction(String message) throws JsonProcessingException {
-        String manipulatedMessage ="These are intents of my sentences = [search, login, register, buy,other]. If intent of message i will give you is one of these return just intent of that sentence. Sentence = " + message;
-        ChatGPTRequest request = new ChatGPTRequest(openAIConfig.getOpenai_model(),manipulatedMessage);
+        String manipulatedMessage = "These are intents of my sentences = [search, login, register, buy, other]. If the intent of the message I give you is one of these, return just the intent of that sentence."
+                + "\nExample: 'I want to search for books.' Output: search"
+                + "\nExample: 'How do I log in to my account?' Output: login"
+                + "\nExample: 'I need to register for a new account.' Output: register"
+                + "\nExample: 'I'd like to buy a new laptop.' Output: buy"
+                + "\nExample: 'Tell me more about your services.' Output: other";
+
+        ChatGPTRequest request = new ChatGPTRequest(openAIConfig.getOpenai_model(),message,manipulatedMessage);
         ChatGPTResponse chatGPTResponse = restTemplate.postForObject(openAIConfig.getOpenai_api_url(), request, ChatGPTResponse.class);
         String intent = chatGPTResponse.getChoices().get(0).getMessage().getContent();
         intentDirector(intent, message);
@@ -88,7 +94,7 @@ public class BotService {
         return chatGPTResponse.getChoices().get(0).getMessage().getContent();*/
         return "x";
     }
-
+/*
     public String attributeExtraction(String message){
 
         List<String> attributeList = new ArrayList<>();
@@ -102,5 +108,7 @@ public class BotService {
 
     }
 
+
+ */
 
 }
