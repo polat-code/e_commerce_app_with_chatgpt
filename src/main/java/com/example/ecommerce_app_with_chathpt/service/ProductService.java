@@ -40,14 +40,14 @@ public class ProductService {
 
             Optional<Category> foundCategory = categoryService.getCategoryByCategoryName(productRequest.getCategoryName());
 
-            //List<Attribute> foundAttributeList = attributeService.findByCategory(foundCategory.get());
-
 
             for(int i = 0; i < productRequest.getAttributes().size(); i++){
                 String key = productRequest.getAttributes().get(i).getKey();
                 String keyValue = productRequest.getAttributes().get(i).getValue();
 
                 // TODO Exception for found category if it is empty
+
+
 
 
 
@@ -66,6 +66,7 @@ public class ProductService {
 
 
                 }
+
                 else{
                     // yoksa
 
