@@ -41,7 +41,7 @@ public class BotService {
         ChatGPTResponse chatGPTResponse = restTemplate.postForObject(openAIConfig.getOpenai_api_url(), request, ChatGPTResponse.class);
         String intent = chatGPTResponse.getChoices().get(0).getMessage().getContent();
         intentDirector(intent, message);
-        System.out.println(intent);
+
         //return chatGPTResponse.getChoices().get(0).getMessage().getContent();
         return intent;
     }
@@ -57,7 +57,7 @@ public class BotService {
         else if(intent.equals("search"))
         {
 
-           searchService.searchByRequest(message);
+            searchService.searchByRequest(message);
 
         }
         else if(intent.equals("buy"))
