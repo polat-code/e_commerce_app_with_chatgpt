@@ -1,5 +1,6 @@
 package com.example.ecommerce_app_with_chathpt.model;
 
+import com.example.ecommerce_app_with_chathpt.model.dto.ProductResponse;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.TypeAlias;
@@ -16,5 +17,5 @@ import java.util.List;
 public class ProductListEntity extends ChatEntity{
 
     @DBRef
-    private List<Product> searchProducts;
+    private List<ProductResponse> searchProducts;
 }

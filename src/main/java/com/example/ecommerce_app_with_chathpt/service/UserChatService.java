@@ -2,6 +2,7 @@ package com.example.ecommerce_app_with_chathpt.service;
 
 import com.example.ecommerce_app_with_chathpt.model.ChatEntity;
 import com.example.ecommerce_app_with_chathpt.model.MessageEntity;
+import com.example.ecommerce_app_with_chathpt.model.ProductListEntity;
 import com.example.ecommerce_app_with_chathpt.model.UserChat;
 import com.example.ecommerce_app_with_chathpt.model.enums.ChatState;
 import com.example.ecommerce_app_with_chathpt.repository.ChatEntityRepository;
@@ -50,7 +51,8 @@ public class UserChatService {
         String response= "";
         if (stateOfChat.equals(ChatState.INITIAL)){
             response = botService.intentExtraction(message);
-            setStateOfChatForInitialState(chatId, response);
+            // TODO Create the structure of state management.
+            // setStateOfChatForInitialState(chatId, response);
             chatEntityResponse = botService.intentDirector(response,message);
 
         } else if (stateOfChat.equals(ChatState.SEARCH)) {
@@ -63,7 +65,7 @@ public class UserChatService {
 
         }
 
-        addChatEntityToUserChat(chatId, chatEntityService.addChatEntity(chatEntityResponse));
+        //addChatEntityToUserChat(chatId, chatEntityService.addChatEntity(chatEntityResponse));
 
         return chatEntityResponse;
 

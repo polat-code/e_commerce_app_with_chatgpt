@@ -1,6 +1,7 @@
 package com.example.ecommerce_app_with_chathpt.service;
 
 import com.example.ecommerce_app_with_chathpt.model.*;
+import com.example.ecommerce_app_with_chathpt.model.dto.ProductResponse;
 import com.example.ecommerce_app_with_chathpt.repository.ChatEntityRepository;
 import com.example.ecommerce_app_with_chathpt.repository.ProductListRepository;
 import com.example.ecommerce_app_with_chathpt.util.mapper.GptAttributeAndAttributeValuesJsonResponseToMapper;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -79,17 +81,20 @@ public class ProductSearchService {
 
     private ChatEntity productToProductListEntity(List<Product> products){
 
-
         ProductListEntity chatEntity = ProductListEntity.builder()
                 .creationTime(Date.from(ZonedDateTime.now().toInstant()))
-                .searchProducts(new ArrayList<Product>())
+                .searchProducts(products.stream().map((product -> ProductResponse.builder()
+                                .title(product.getTitle())
+                                .brand(product.getBrand())
+                                .url(product.getUrl())
+                                .inStock(product.isInStock())
+                                .price(product.getPrice())
+                                .productId(product.getId())
+                                .category(product.getCategory())
+                        .build()))
+                        .collect(Collectors.toList()))
                 .build();
-        for (Product product: products){
-
-            chatEntity.getSearchProducts().add(product);
-
-        }
-
+        System.out.println(chatEntity);
         return chatEntity;
     }
 
