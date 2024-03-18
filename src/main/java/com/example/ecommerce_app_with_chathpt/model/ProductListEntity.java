@@ -3,6 +3,7 @@ package com.example.ecommerce_app_with_chathpt.model;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.TypeAlias;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 @EqualsAndHashCode(callSuper = true)
 @TypeAlias("productLists")
@@ -12,5 +13,6 @@ import org.springframework.data.annotation.TypeAlias;
 @Data
 public class ProductListEntity extends ChatEntity{
 
-    private String messageContent;
+    @DBRef
+    private Product searchProduct;
 }

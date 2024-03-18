@@ -3,6 +3,8 @@ package com.example.ecommerce_app_with_chathpt.service;
 
 import com.example.ecommerce_app_with_chathpt.config.OpenAIConfig;
 
+import com.example.ecommerce_app_with_chathpt.model.ChatEntity;
+import com.example.ecommerce_app_with_chathpt.model.ProductListEntity;
 import com.example.ecommerce_app_with_chathpt.model.dto.request.ChatGPTRequest;
 import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatGPTResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 @Service
@@ -40,15 +45,15 @@ public class BotService {
         ChatGPTRequest request = new ChatGPTRequest(openAIConfig.getOpenai_model(),message,manipulatedMessage);
         ChatGPTResponse chatGPTResponse = restTemplate.postForObject(openAIConfig.getOpenai_api_url(), request, ChatGPTResponse.class);
         String intent = chatGPTResponse.getChoices().get(0).getMessage().getContent();
-        intentDirector(intent, message);
 
         //return chatGPTResponse.getChoices().get(0).getMessage().getContent();
         return intent;
     }
 
 
-    private ResponseEntity<String> intentDirector(String intent, String message) throws JsonProcessingException {
+    public List<ChatEntity> intentDirector(String intent, String message) throws JsonProcessingException {
         String category;
+        List<ChatEntity> chatEntityList = new ArrayList<>();
 
         if (intent.equals("login")){
 
@@ -57,11 +62,7 @@ public class BotService {
         else if(intent.equals("search"))
         {
 
-            searchService.searchByRequest(message);
-
-        }
-        else if(intent.equals("buy"))
-        {
+            chatEntityList = searchService.searchByRequest(message);
 
         }
         else if(intent.equals("register"))
@@ -69,6 +70,28 @@ public class BotService {
 
         }
         else if(intent.equals("other"))
+        {
+
+        }
+        else {
+            throw new RuntimeException();
+        }
+
+
+        return chatEntityList;
+    }
+
+    public ResponseEntity<String> intentDirectorSearchState(String intent, String message) throws JsonProcessingException {
+        String category;
+
+        if(intent.equals("search"))
+        {
+
+            searchService.searchByRequest(message);
+
+        }
+
+        else if(intent.equals("Change features of product"))
         {
 
         }

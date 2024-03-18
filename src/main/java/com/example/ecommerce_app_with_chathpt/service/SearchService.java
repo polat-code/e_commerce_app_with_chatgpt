@@ -1,8 +1,6 @@
 package com.example.ecommerce_app_with_chathpt.service;
 
-import com.example.ecommerce_app_with_chathpt.model.Attribute;
-import com.example.ecommerce_app_with_chathpt.model.AttributeValue;
-import com.example.ecommerce_app_with_chathpt.model.Category;
+import com.example.ecommerce_app_with_chathpt.model.*;
 import com.example.ecommerce_app_with_chathpt.util.mapper.GptAttributeAndAttributeValuesJsonResponseToMapper;
 import com.example.ecommerce_app_with_chathpt.util.mapper.SearchAttributeKeyValueJsonMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -26,14 +24,14 @@ public class SearchService {
     private ProductSearchService productSearchService;
     private ChatGPTService chatGPTService;
 
-    public ResponseEntity<Object> searchByRequest(String message) {
+    public List<ChatEntity> searchByRequest(String message) {
         Category category = determineCategory(message);
+        System.out.println(category);
         List<Attribute> attributes = attributeService.getAllAttributesByCategory(category);
         Map<Attribute, List<AttributeValue>> possibleAttributeValues = getPossibleAttributeValues(attributes);
         List<SearchAttributeKeyValueJsonMapper> attributeKeyValueJsonMapperList = mapAttributesToJsonMapper(possibleAttributeValues);
         List<GptAttributeAndAttributeValuesJsonResponseToMapper> attributeResponse = getAttributeResponseFromChatGPT(message, attributeKeyValueJsonMapperList);
-        productSearchService.searchProduct(attributeResponse, category);
-        return new ResponseEntity<>(attributeKeyValueJsonMapperList, HttpStatus.OK);
+        return productSearchService.searchProduct(attributeResponse, category);
     }
 
     private Category determineCategory(String message) {
@@ -52,10 +50,9 @@ public class SearchService {
                     "{'input': 'I want to buy a dress.', 'output': Clothing}]";
             String categoryResponse = chatGPTService.sendRequestToChatGPT(message, manipulatedMessage);
             String fixedCategoryResponse = categoryResponse.replace("\"", "");
-            System.out.println(categoryResponse);
-            System.out.println(fixedCategoryResponse);
-            System.out.println(allCategoriesByParent);
+
             if (!allCategoriesByParent.contains(categoryResponse)){
+                optionalCategory = categoryService.getCategoryByCategoryNameAndParentCategoryName(fixedCategoryResponse, optionalCategory.get());
                 break;
             }
 
@@ -80,7 +77,6 @@ public class SearchService {
         if (optionalCategory.isEmpty()) {
             throw new RuntimeException("Category is not found ");
         }
-
         return optionalCategory.get();
     }
 
