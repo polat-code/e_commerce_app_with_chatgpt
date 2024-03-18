@@ -4,6 +4,7 @@ import com.example.ecommerce_app_with_chathpt.model.ChatEntity;
 import com.example.ecommerce_app_with_chathpt.model.MessageEntity;
 import com.example.ecommerce_app_with_chathpt.model.UserChat;
 import com.example.ecommerce_app_with_chathpt.model.enums.ChatState;
+import com.example.ecommerce_app_with_chathpt.repository.ChatEntityRepository;
 import com.example.ecommerce_app_with_chathpt.repository.MessageEntityRepository;
 import com.example.ecommerce_app_with_chathpt.repository.UserChatRepository;
 import com.example.ecommerce_app_with_chathpt.util.Prompts;
@@ -42,15 +43,16 @@ public class UserChatService {
         return userChatRepository.save(userChat);
     }
 
-    public List<ChatEntity> sendMessage(String chatId, String message) throws JsonProcessingException {
+    public ChatEntity sendMessage(String chatId, String message) throws JsonProcessingException {
         addMessageToChat(chatId,message);
         ChatState stateOfChat = getStateOfMessage(chatId);
-        List<ChatEntity> chatEntityResponse = new ArrayList<>();
+        ChatEntity chatEntityResponse = new ChatEntity() ;
         String response= "";
         if (stateOfChat.equals(ChatState.INITIAL)){
             response = botService.intentExtraction(message);
             setStateOfChatForInitialState(chatId, response);
             chatEntityResponse = botService.intentDirector(response,message);
+
         } else if (stateOfChat.equals(ChatState.SEARCH)) {
 
         }
@@ -60,7 +62,8 @@ public class UserChatService {
         else if (stateOfChat.equals(ChatState.REGISTER)) {
 
         }
-        addMessageToChat(chatId, response);
+
+        addChatEntityToUserChat(chatId, chatEntityService.addChatEntity(chatEntityResponse));
 
         return chatEntityResponse;
 
@@ -83,18 +86,23 @@ public class UserChatService {
 
 
     private void addMessageToChat(String chatId, String message){
-        Optional<UserChat> userChat = userChatRepository.findById(chatId);
+
         ChatEntity chatEntity = MessageEntity.builder()
                 .creationTime(Date.from(ZonedDateTime.now().toInstant()))
                 .messageContent(message).build();
 
         ChatEntity chatEntityFromRepo = chatEntityService.addChatEntity(chatEntity);
-        messageEntityService.addMessageEntity((MessageEntity) chatEntityFromRepo);
+        MessageEntity messageEntity = messageEntityService.addMessageEntity((MessageEntity) chatEntityFromRepo);
+        addChatEntityToUserChat(chatId, messageEntity);
+
+
+    }
+
+    private void addChatEntityToUserChat(String chatId, ChatEntity chatEntity){
+        Optional<UserChat> userChat = userChatRepository.findById(chatId);
         if (userChat.isPresent()){
-            userChat.get().getChatRecord().add(chatEntityFromRepo);
+            userChat.get().getChatRecord().add(chatEntity);
             userChatRepository.save(userChat.get());
         }
-
-
     }
 }

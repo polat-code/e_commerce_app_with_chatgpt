@@ -23,7 +23,7 @@ public class ChatController {
     }
 
     @GetMapping("/{chatId}")
-    public List<ChatEntity> sendMessage(@PathVariable String chatId, @RequestBody String message) throws JsonProcessingException {
+    public ChatEntity sendMessage(@PathVariable String chatId, @RequestBody String message) throws JsonProcessingException {
         return userChatService.sendMessage(chatId, message);
     }
 

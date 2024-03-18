@@ -24,9 +24,9 @@ public class SearchService {
     private ProductSearchService productSearchService;
     private ChatGPTService chatGPTService;
 
-    public List<ChatEntity> searchByRequest(String message) {
+    public ChatEntity searchByRequest(String message) {
         Category category = determineCategory(message);
-        System.out.println(category);
+
         List<Attribute> attributes = attributeService.getAllAttributesByCategory(category);
         Map<Attribute, List<AttributeValue>> possibleAttributeValues = getPossibleAttributeValues(attributes);
         List<SearchAttributeKeyValueJsonMapper> attributeKeyValueJsonMapperList = mapAttributesToJsonMapper(possibleAttributeValues);

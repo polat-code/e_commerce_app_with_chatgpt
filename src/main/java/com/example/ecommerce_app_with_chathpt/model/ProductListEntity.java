@@ -5,6 +5,8 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
+import java.util.List;
+
 @EqualsAndHashCode(callSuper = true)
 @TypeAlias("productLists")
 @SuperBuilder
@@ -14,5 +16,5 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 public class ProductListEntity extends ChatEntity{
 
     @DBRef
-    private Product searchProduct;
+    private List<Product> searchProducts;
 }

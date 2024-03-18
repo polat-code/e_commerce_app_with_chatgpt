@@ -51,9 +51,9 @@ public class BotService {
     }
 
 
-    public List<ChatEntity> intentDirector(String intent, String message) throws JsonProcessingException {
+    public ChatEntity intentDirector(String intent, String message) throws JsonProcessingException {
         String category;
-        List<ChatEntity> chatEntityList = new ArrayList<>();
+        ChatEntity chatEntityResponse = new ChatEntity();
 
         if (intent.equals("login")){
 
@@ -62,7 +62,7 @@ public class BotService {
         else if(intent.equals("search"))
         {
 
-            chatEntityList = searchService.searchByRequest(message);
+            chatEntityResponse = searchService.searchByRequest(message);
 
         }
         else if(intent.equals("register"))
@@ -78,7 +78,7 @@ public class BotService {
         }
 
 
-        return chatEntityList;
+        return chatEntityResponse;
     }
 
     public ResponseEntity<String> intentDirectorSearchState(String intent, String message) throws JsonProcessingException {

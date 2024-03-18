@@ -11,8 +11,8 @@ public class MessageEntityService {
 
     private MessageEntityRepository messageEntityRepository;
 
-    public void addMessageEntity(MessageEntity messageEntity){
-        messageEntityRepository.save(messageEntity);
+    public MessageEntity addMessageEntity(MessageEntity messageEntity){
+        return messageEntityRepository.save(messageEntity);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.example.ecommerce_app_with_chathpt.service;
 
 import com.example.ecommerce_app_with_chathpt.model.*;
+import com.example.ecommerce_app_with_chathpt.repository.ChatEntityRepository;
 import com.example.ecommerce_app_with_chathpt.repository.ProductListRepository;
 import com.example.ecommerce_app_with_chathpt.util.mapper.GptAttributeAndAttributeValuesJsonResponseToMapper;
 import lombok.AllArgsConstructor;
@@ -17,9 +18,10 @@ public class ProductSearchService {
     private AttributeValueService attributeValueService;
     private ProductService productService;
     private final ProductListRepository productListRepository;
+    private final ChatEntityRepository chatEntityRepository;
 
 
-    public List<ChatEntity> searchProduct(List<GptAttributeAndAttributeValuesJsonResponseToMapper> gptAttributeAndAttributeValuesJsonResponseToMappers, Category category){
+    public ChatEntity searchProduct(List<GptAttributeAndAttributeValuesJsonResponseToMapper> gptAttributeAndAttributeValuesJsonResponseToMappers, Category category){
         List<AttributeValue> attributeValues = new ArrayList<>();
         for (GptAttributeAndAttributeValuesJsonResponseToMapper gptAttributeAndAttributeValuesJsonResponseToMapper : gptAttributeAndAttributeValuesJsonResponseToMappers ){
             String key = gptAttributeAndAttributeValuesJsonResponseToMapper.getKey();
@@ -70,24 +72,25 @@ public class ProductSearchService {
             sortedMap.put(entry.getKey(), entry.getValue());
         }
 
-
-        return productToCartEntities(sortedMap.keySet().stream().toList());
+        return productToProductListEntity(sortedMap.keySet().stream().toList());
     }
 
 
 
-    private List<ChatEntity> productToCartEntities(List<Product> products){
+    private ChatEntity productToProductListEntity(List<Product> products){
 
-        List<ChatEntity> chatEntityResponse = new ArrayList<>();
+
+        ProductListEntity chatEntity = ProductListEntity.builder()
+                .creationTime(Date.from(ZonedDateTime.now().toInstant()))
+                .searchProducts(new ArrayList<Product>())
+                .build();
         for (Product product: products){
-            ChatEntity chatEntity = ProductListEntity.builder()
-                    .creationTime(Date.from(ZonedDateTime.now().toInstant()))
-                    .searchProduct(product)
-                    .build();
-            chatEntityResponse.add(chatEntity);
+
+            chatEntity.getSearchProducts().add(product);
+
         }
 
-        return chatEntityResponse;
+        return chatEntity;
     }
 
 
