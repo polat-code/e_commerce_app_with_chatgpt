@@ -23,4 +23,5 @@
         private String id;
         @Field(targetType = FieldType.DATE_TIME)
         private Date creationTime;
+        private String returnType;
     }

@@ -86,13 +86,14 @@ public class ProductSearchService {
                 .searchProducts(products.stream().map((product -> ProductResponse.builder()
                                 .title(product.getTitle())
                                 .brand(product.getBrand())
-                                .url(product.getUrl())
+                                .url(product.getThumbnailImage())
                                 .inStock(product.isInStock())
                                 .price(product.getPrice())
                                 .productId(product.getId())
                                 .category(product.getCategory())
                         .build()))
                         .collect(Collectors.toList()))
+                .returnType("productList")
                 .build();
         System.out.println(chatEntity);
         return chatEntity;
