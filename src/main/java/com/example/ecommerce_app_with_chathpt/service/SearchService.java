@@ -50,12 +50,13 @@ public class SearchService {
                     "{'input': 'I want to buy a dress.', 'output': Clothing}]";
             String categoryResponse = chatGPTService.sendRequestToChatGPT(message, manipulatedMessage);
             String fixedCategoryResponse = categoryResponse.replace("\"", "");
-
+        /*
             if (!allCategoriesByParent.contains(categoryResponse)){
                 optionalCategory = categoryService.getCategoryByCategoryNameAndParentCategoryName(fixedCategoryResponse, optionalCategory.get());
                 break;
             }
 
+         */
             if (optionalCategory.isPresent()) {
                 optionalCategory = categoryService.getCategoryByCategoryNameAndParentCategoryName(fixedCategoryResponse, optionalCategory.get());
             } else {
