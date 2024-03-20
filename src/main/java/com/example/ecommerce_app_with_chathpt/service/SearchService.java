@@ -36,7 +36,7 @@ public class SearchService {
 
     private Category determineCategory(String message) {
         List<String> allCategoriesByParent = categoryService.findByParentCategoryIsNull().stream()
-                .map(Category::toString)
+                .map(category -> category.toString().replace("\"", "")) // Remove quotation marks
                 .collect(Collectors.toList());
         Optional<Category> optionalCategory = Optional.empty();
         boolean flag = true;
@@ -50,13 +50,12 @@ public class SearchService {
                     "{'input': 'I want to buy a dress.', 'output': Clothing}]";
             String categoryResponse = chatGPTService.sendRequestToChatGPT(message, manipulatedMessage);
             String fixedCategoryResponse = categoryResponse.replace("\"", "");
-        /*
-            if (!allCategoriesByParent.contains(categoryResponse)){
+
+            if (!allCategoriesByParent.contains(fixedCategoryResponse)){
                 optionalCategory = categoryService.getCategoryByCategoryNameAndParentCategoryName(fixedCategoryResponse, optionalCategory.get());
                 break;
             }
 
-         */
             if (optionalCategory.isPresent()) {
                 optionalCategory = categoryService.getCategoryByCategoryNameAndParentCategoryName(fixedCategoryResponse, optionalCategory.get());
             } else {
