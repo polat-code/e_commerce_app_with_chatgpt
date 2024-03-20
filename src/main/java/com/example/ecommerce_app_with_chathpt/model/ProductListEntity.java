@@ -17,5 +17,5 @@ import java.util.List;
 public class ProductListEntity extends ChatEntity{
 
     @DBRef
-    private List<ProductResponse> searchProducts;
+    private List<Product> searchProducts;
 }

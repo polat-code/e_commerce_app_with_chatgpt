@@ -3,10 +3,12 @@ package com.example.ecommerce_app_with_chathpt.controller;
 import com.example.ecommerce_app_with_chathpt.model.ChatEntity;
 import com.example.ecommerce_app_with_chathpt.model.UserChat;
 import com.example.ecommerce_app_with_chathpt.model.dto.request.SendMessageChatRequest;
+import com.example.ecommerce_app_with_chathpt.model.dto.response.ProductListResponse;
 import com.example.ecommerce_app_with_chathpt.service.UserChatService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,14 +34,14 @@ public class ChatController {
     }
 
     @PostMapping("/chat")
-    public ChatEntity sendMessage(@RequestBody SendMessageChatRequest sendMessageChatRequest) throws JsonProcessingException {
+    public ResponseEntity<ProductListResponse> sendMessage(@RequestBody SendMessageChatRequest sendMessageChatRequest) throws JsonProcessingException {
         log.info(sendMessageChatRequest.getMessage());
         log.info(sendMessageChatRequest.getChatId());
         return userChatService.sendMessage(sendMessageChatRequest.getChatId(), sendMessageChatRequest.getMessage());
     }
 
     @PostMapping("/send-message")
-    public ChatEntity sendMessageWithPrompt(@RequestBody SendMessageChatRequest sendMessageChatRequest) throws JsonProcessingException{
+    public ResponseEntity<ProductListResponse> sendMessageWithPrompt(@RequestBody SendMessageChatRequest sendMessageChatRequest) throws JsonProcessingException{
         log.info(sendMessageChatRequest.getMessage());
         log.info(sendMessageChatRequest.getChatId());
         return userChatService.sendMessage(sendMessageChatRequest.getChatId(), sendMessageChatRequest.getMessage());

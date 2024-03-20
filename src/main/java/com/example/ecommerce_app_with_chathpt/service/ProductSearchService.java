@@ -6,6 +6,7 @@ import com.example.ecommerce_app_with_chathpt.repository.ChatEntityRepository;
 import com.example.ecommerce_app_with_chathpt.repository.ProductListRepository;
 import com.example.ecommerce_app_with_chathpt.util.mapper.GptAttributeAndAttributeValuesJsonResponseToMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -83,16 +84,7 @@ public class ProductSearchService {
 
         ProductListEntity chatEntity = ProductListEntity.builder()
                 .creationTime(Date.from(ZonedDateTime.now().toInstant()))
-                .searchProducts(products.stream().map((product -> ProductResponse.builder()
-                                .title(product.getTitle())
-                                .brand(product.getBrand())
-                                .url(product.getThumbnailImage())
-                                .inStock(product.isInStock())
-                                .price(product.getPrice())
-                                .productId(product.getId())
-                                .category(product.getCategory())
-                        .build()))
-                        .collect(Collectors.toList()))
+                .searchProducts(products)
                 .returnType("productList")
                 .build();
         System.out.println(chatEntity);

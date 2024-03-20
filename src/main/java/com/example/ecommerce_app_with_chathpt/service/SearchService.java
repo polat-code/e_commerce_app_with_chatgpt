@@ -24,7 +24,7 @@ public class SearchService {
     private ProductSearchService productSearchService;
     private ChatGPTService chatGPTService;
 
-    public ChatEntity searchByRequest(String message) {
+    public ChatEntity  searchByRequest(String message) {
         Category category = determineCategory(message);
 
         List<Attribute> attributes = attributeService.getAllAttributesByCategory(category);

@@ -4,6 +4,8 @@ import com.example.ecommerce_app_with_chathpt.model.ChatEntity;
 import com.example.ecommerce_app_with_chathpt.model.MessageEntity;
 import com.example.ecommerce_app_with_chathpt.model.ProductListEntity;
 import com.example.ecommerce_app_with_chathpt.model.UserChat;
+import com.example.ecommerce_app_with_chathpt.model.dto.ProductResponse;
+import com.example.ecommerce_app_with_chathpt.model.dto.response.ProductListResponse;
 import com.example.ecommerce_app_with_chathpt.model.enums.ChatState;
 import com.example.ecommerce_app_with_chathpt.repository.ChatEntityRepository;
 import com.example.ecommerce_app_with_chathpt.repository.MessageEntityRepository;
@@ -11,6 +13,8 @@ import com.example.ecommerce_app_with_chathpt.repository.UserChatRepository;
 import com.example.ecommerce_app_with_chathpt.util.Prompts;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -44,7 +49,7 @@ public class UserChatService {
         return userChatRepository.save(userChat);
     }
 
-    public ChatEntity sendMessage(String chatId, String message) throws JsonProcessingException {
+    public ResponseEntity<ProductListResponse>  sendMessage(String chatId, String message) throws JsonProcessingException {
         addMessageToChat(chatId,message);
         ChatState stateOfChat = getStateOfMessage(chatId);
         ChatEntity chatEntityResponse = new ChatEntity() ;
@@ -65,12 +70,31 @@ public class UserChatService {
 
         }
 
-        //addChatEntityToUserChat(chatId, chatEntityService.addChatEntity(chatEntityResponse));
+        addChatEntityToUserChat(chatId, chatEntityService.addChatEntity(chatEntityResponse));
 
-        return chatEntityResponse;
+        return new ResponseEntity<>(listEntityToResponseListEntity((ProductListEntity) chatEntityResponse), HttpStatus.OK);
 
 
 
+    }
+
+    private ProductListResponse listEntityToResponseListEntity(ProductListEntity productListEntity) {
+        ProductListResponse productListResponse = ProductListResponse.builder()
+                .creationTime(Date.from(ZonedDateTime.now().toInstant()))
+                .searchProducts(productListEntity.getSearchProducts().stream().map((product -> ProductResponse.builder()
+                                .title(product.getTitle())
+                                .brand(product.getBrand())
+                                .url(product.getThumbnailImage())
+                                .inStock(product.isInStock())
+                                .price(product.getPrice())
+                                .productId(product.getId())
+                                .category(product.getCategory())
+                                .attributeValues(product.getAttributeValues())
+                                .build()))
+                        .collect(Collectors.toList()))
+                .returnType("productList")
+                .build();
+        return productListResponse;
     }
 
     private void setStateOfChatForInitialState(String chatId, String response) {
