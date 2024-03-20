@@ -64,7 +64,7 @@ public class SearchService {
 
             if (optionalCategory.isPresent()) {
                 allCategoriesByParent = categoryService.getCategoryByParentCategory(optionalCategory.get()).stream()
-                        .map(Category::toString)
+                        .map(category -> category.toString().replace("\"", "")) // Remove quotation marks
                         .toList();
                 if (allCategoriesByParent.isEmpty()) {
                     flag = false;
