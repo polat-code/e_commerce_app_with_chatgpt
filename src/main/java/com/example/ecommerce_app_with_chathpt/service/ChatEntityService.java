@@ -2,9 +2,12 @@ package com.example.ecommerce_app_with_chathpt.service;
 
 import com.example.ecommerce_app_with_chathpt.model.ChatEntity;
 import com.example.ecommerce_app_with_chathpt.model.MessageEntity;
+import com.example.ecommerce_app_with_chathpt.model.UserChat;
 import com.example.ecommerce_app_with_chathpt.repository.ChatEntityRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -20,4 +23,7 @@ public class ChatEntityService {
     }
 
 
+    public List<ChatEntity> findAll() {
+        return chatEntityRepository.findAll();
+    }
 }

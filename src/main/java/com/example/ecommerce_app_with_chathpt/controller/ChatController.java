@@ -26,6 +26,11 @@ public class ChatController {
         return userChatService.createChat();
     }
 
+    @GetMapping("/all")
+    public List<UserChat> getAllChats() {
+        return userChatService.getAllChats();
+    }
+
     @PostMapping("/chat")
     public ChatEntity sendMessage(@RequestBody SendMessageChatRequest sendMessageChatRequest) throws JsonProcessingException {
         log.info(sendMessageChatRequest.getMessage());

@@ -107,4 +107,8 @@ public class UserChatService {
             userChatRepository.save(userChat.get());
         }
     }
+
+    public List<UserChat> getAllChats() {
+        return userChatRepository.findAll();
+    }
 }
