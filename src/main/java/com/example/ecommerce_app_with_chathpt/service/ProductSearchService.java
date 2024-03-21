@@ -19,25 +19,9 @@ public class ProductSearchService {
     private AttributeService attributeService;
     private AttributeValueService attributeValueService;
     private ProductService productService;
-    private final ProductListRepository productListRepository;
-    private final ChatEntityRepository chatEntityRepository;
 
 
-    public ChatEntity searchProduct(List<GptAttributeAndAttributeValuesJsonResponseToMapper> gptAttributeAndAttributeValuesJsonResponseToMappers, Category category){
-        List<AttributeValue> attributeValues = new ArrayList<>();
-        for (GptAttributeAndAttributeValuesJsonResponseToMapper gptAttributeAndAttributeValuesJsonResponseToMapper : gptAttributeAndAttributeValuesJsonResponseToMappers ){
-            String key = gptAttributeAndAttributeValuesJsonResponseToMapper.getKey();
-
-            List<String> values = gptAttributeAndAttributeValuesJsonResponseToMapper.getValues();
-            for (String value: values){
-                Optional<Attribute> optionalAttribute = attributeService.findByCategoryAndName(category, key);
-                if (optionalAttribute.isPresent()) {
-                    Optional<AttributeValue> attributeValue = attributeValueService.findByAttributeAndValue(optionalAttribute.get(),value);
-                    attributeValue.ifPresent(attributeValues::add);
-                }
-            }
-        }
-
+    public ChatEntity searchProduct(Category category,List<AttributeValue> attributeValues){
 
 
         List<Product> categoryProducts = productService.getAllProductsByCategory(category);
@@ -78,6 +62,23 @@ public class ProductSearchService {
     }
 
 
+    public List<AttributeValue> mapAttributeValues(List<GptAttributeAndAttributeValuesJsonResponseToMapper> gptAttributeAndAttributeValuesJsonResponseToMappers,Category category){
+        List<AttributeValue> attributeValues = new ArrayList<>();
+        for (GptAttributeAndAttributeValuesJsonResponseToMapper gptAttributeAndAttributeValuesJsonResponseToMapper : gptAttributeAndAttributeValuesJsonResponseToMappers ){
+            String key = gptAttributeAndAttributeValuesJsonResponseToMapper.getKey();
+
+            List<String> values = gptAttributeAndAttributeValuesJsonResponseToMapper.getValues();
+            for (String value: values){
+                Optional<Attribute> optionalAttribute = attributeService.findByCategoryAndName(category, key);
+                if (optionalAttribute.isPresent()) {
+                    Optional<AttributeValue> attributeValue = attributeValueService.findByAttributeAndValue(optionalAttribute.get(),value);
+                    attributeValue.ifPresent(attributeValues::add);
+                }
+            }
+        }
+        return attributeValues;
+    }
+
 
     private ChatEntity productToProductListEntity(List<Product> products){
 
@@ -95,7 +96,6 @@ public class ProductSearchService {
                         .collect(Collectors.toList()))
                 .returnType("productList")
                 .build();
-        System.out.println(chatEntity);
         return chatEntity;
     }
 

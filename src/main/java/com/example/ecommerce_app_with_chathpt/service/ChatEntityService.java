@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class ChatEntityService {
 
-    private MessageEntityService messageEntityService;
     private ChatEntityRepository chatEntityRepository;
 
 

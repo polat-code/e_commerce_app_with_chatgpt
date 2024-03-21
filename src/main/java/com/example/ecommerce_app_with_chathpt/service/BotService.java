@@ -3,10 +3,10 @@ package com.example.ecommerce_app_with_chathpt.service;
 
 import com.example.ecommerce_app_with_chathpt.config.OpenAIConfig;
 
-import com.example.ecommerce_app_with_chathpt.model.ChatEntity;
-import com.example.ecommerce_app_with_chathpt.model.ProductListEntity;
+import com.example.ecommerce_app_with_chathpt.model.*;
 import com.example.ecommerce_app_with_chathpt.model.dto.request.ChatGPTRequest;
 import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatGPTResponse;
+import com.example.ecommerce_app_with_chathpt.util.mapper.GptAttributeAndAttributeValuesJsonResponseToMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,9 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -33,6 +32,12 @@ public class BotService {
 
     private SearchService searchService;
 
+    private SearchStateService searchStateService;
+
+    private ProductSearchService productSearchService;
+
+    private UserChatService userChatService;
+
     //TODO Give more examples to prompts
     public String intentExtraction(String message) throws JsonProcessingException {
         String manipulatedMessage = "These are intents of my sentences = [search, login, register, buy, other]. If the intent of the message I give you is one of these, return just the intent of that sentence."
@@ -46,12 +51,43 @@ public class BotService {
         ChatGPTResponse chatGPTResponse = restTemplate.postForObject(openAIConfig.getOpenai_api_url(), request, ChatGPTResponse.class);
         String intent = chatGPTResponse.getChoices().get(0).getMessage().getContent();
 
-        //return chatGPTResponse.getChoices().get(0).getMessage().getContent();
         return intent;
     }
 
 
-    public ChatEntity intentDirector(String intent, String message) throws JsonProcessingException {
+    public String intentExtractionForInitialState(String message) throws JsonProcessingException {
+        String manipulatedMessage = "These are intents of my sentences = [search, login, register, other]. If the intent of the message I give you is one of these, return just the intent of that sentence."
+                + "\nExample: 'I want to search for books.' Output: search"
+                + "\nExample: 'How do I log in to my account?' Output: login"
+                + "\nExample: 'I need to register for a new account.' Output: register"
+                + "\nExample: 'Tell me more about your services.' Output: other";
+
+        ChatGPTRequest request = new ChatGPTRequest(openAIConfig.getOpenai_model(),message,manipulatedMessage);
+        ChatGPTResponse chatGPTResponse = restTemplate.postForObject(openAIConfig.getOpenai_api_url(), request, ChatGPTResponse.class);
+        String intent = chatGPTResponse.getChoices().get(0).getMessage().getContent();
+
+        return intent;
+    }
+
+    public String intentExtractionForSearchState(String message) throws JsonProcessingException {
+        String manipulatedMessage = "These are intents of my sentences = [search, remove feature, add feature, buy product, add to cart]. If the intent of the message I give you is one of these, return just the intent of that sentence."
+                + "\nExample: 'I want to search for books.' Output: search"
+                + "\nExample: 'I also want to look for red products.' Output: add feature"
+                + "\nExample: 'Do not show products with GTX2060' Output: remove feature"
+                + "\nExample: 'I want to add fourth product to my cart' Output: remove feature"
+                + "\nExample: 'I want to buy second product.' Output: buy product";
+
+        ChatGPTRequest request = new ChatGPTRequest(openAIConfig.getOpenai_model(),message,manipulatedMessage);
+        ChatGPTResponse chatGPTResponse = restTemplate.postForObject(openAIConfig.getOpenai_api_url(), request, ChatGPTResponse.class);
+        String intent = chatGPTResponse.getChoices().get(0).getMessage().getContent();
+
+        return intent;
+    }
+
+
+
+
+    public ChatEntity intentDirectorInitialState(String intent, String message, String chatId) throws JsonProcessingException {
         String category;
         ChatEntity chatEntityResponse = new ChatEntity();
 
@@ -62,7 +98,7 @@ public class BotService {
         else if(intent.equals("search"))
         {
 
-            chatEntityResponse = searchService.searchByRequest(message);
+            chatEntityResponse = searchService.searchByRequest(message, chatId);
 
         }
         else if(intent.equals("register"))
@@ -81,56 +117,49 @@ public class BotService {
         return chatEntityResponse;
     }
 
-    public ResponseEntity<String> intentDirectorSearchState(String intent, String message) throws JsonProcessingException {
-        String category;
+    public ChatEntity intentDirectorSearchState(String intent, String message, String chatId) throws JsonProcessingException {
 
+        ChatEntity chatEntityResponse = new ChatEntity();
         if(intent.equals("search"))
         {
 
-            searchService.searchByRequest(message);
+            searchService.searchByRequest(message, chatId);
 
         }
 
-        else if(intent.equals("Change features of product"))
+        else if(intent.equals("remove feature"))
         {
+            Optional<UserChat> userChat = userChatService.getUserChatById(chatId);
 
+            List<GptAttributeAndAttributeValuesJsonResponseToMapper> attributeValueList = searchStateService.removeAttributes(message, userChat.get().getAttributeValues());
+            List<AttributeValue> currentAttributeValues = userChat.get().getAttributeValues();;
+            List<AttributeValue> featuresToBeRemoved = productSearchService.mapAttributeValues(attributeValueList, userChat.get().getCategory());
+            currentAttributeValues.removeIf(featuresToBeRemoved::contains);
+
+            userChatService.setAttributeValuesAndCategoryOfChat(chatId,currentAttributeValues,userChat.get().getCategory());
+            return productSearchService.searchProduct(userChat.get().getCategory(), currentAttributeValues);
+        }
+        else if(intent.equals("add feature"))
+        {
+            searchStateService.addAttributes(message, chatId);
+        }
+        else if(intent.equals("buy product"))
+        {
+            searchStateService.buyProduct(message, chatId);
+        }
+        else if(intent.equals("add to cart"))
+        {
+            searchStateService.addToCartProduct(message, chatId);
         }
         else {
             throw new RuntimeException();
         }
 
 
-        return new ResponseEntity<>("OK", HttpStatus.OK);
+        return chatEntityResponse;
     }
 
 
 
-    public String subcategoryExtraction(String message, String categoryId){
-
-        /*List<Category> categoryList = categoryService.getChildCategoriesOfParent(Integer.parseInt(categoryId));
-
-        String manipulatedMessage ="These are subcategories of my system "+ categoryList.toString()+"If user want to buy on one of these sub categories return just subcategoryId of that request. Sentence = "+ message;
-        ChatGPTRequest request = new ChatGPTRequest(openAIConfig.getOpenai_model(),manipulatedMessage);
-        ChatGPTResponse chatGPTResponse = restTemplate.postForObject(openAIConfig.getOpenai_api_url(), request, ChatGPTResponse.class);
-        attributeExtraction(message);
-        return chatGPTResponse.getChoices().get(0).getMessage().getContent();*/
-        return "x";
-    }
-/*
-    public String attributeExtraction(String message){
-
-        List<String> attributeList = new ArrayList<>();
-
-        String manipulatedMessage ="These are attributes of this desired product "+attributeList.toString()+"If the sentence contains values of these attributes return me with filling them as just  json file. Sentence = "+ message;
-        ChatGPTRequest request = new ChatGPTRequest(openAIConfig.getOpenai_model(),manipulatedMessage);
-        ChatGPTResponse chatGPTResponse = restTemplate.postForObject(openAIConfig.getOpenai_api_url(), request, ChatGPTResponse.class);
-        System.out.println(chatGPTResponse.getChoices().get(0).getMessage().getContent());
-        return chatGPTResponse.getChoices().get(0).getMessage().getContent();
-
-
-    }
-
-
- */
 
 }

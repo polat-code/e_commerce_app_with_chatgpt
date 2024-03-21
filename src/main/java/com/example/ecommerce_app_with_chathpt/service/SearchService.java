@@ -6,8 +6,7 @@ import com.example.ecommerce_app_with_chathpt.util.mapper.SearchAttributeKeyValu
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -16,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+
 public class SearchService {
 
     private CategoryService categoryService;
@@ -23,21 +23,60 @@ public class SearchService {
     private AttributeService attributeService;
     private ProductSearchService productSearchService;
     private ChatGPTService chatGPTService;
+    private UserChatService userChatService;
 
-    public ChatEntity searchByRequest(String message) {
+    public ChatEntity searchByRequest(String message, String chatId) {
+        Date date1 = new Date();
+        //3.3 SEC
         Category category = determineCategory(message);
 
+        Date date2 = new Date();
+        System.out.println(date2.getTime()-date1.getTime());
+
+        date1 = new Date();
+        //0.05 SEC
         List<Attribute> attributes = attributeService.getAllAttributesByCategory(category);
+        date2 = new Date();
+        System.out.println(date2.getTime()-date1.getTime());
+        date1 = new Date();
+        //1 SEC
         Map<Attribute, List<AttributeValue>> possibleAttributeValues = getPossibleAttributeValues(attributes);
+
+        date2 = new Date();
+        System.out.println(date2.getTime()-date1.getTime());
+        date1 = new Date();
+        //0
         List<SearchAttributeKeyValueJsonMapper> attributeKeyValueJsonMapperList = mapAttributesToJsonMapper(possibleAttributeValues);
+        date2 = new Date();
+        System.out.println(date2.getTime()-date1.getTime());
+        date1 = new Date();
+        //3 SEC
         List<GptAttributeAndAttributeValuesJsonResponseToMapper> attributeResponse = getAttributeResponseFromChatGPT(message, attributeKeyValueJsonMapperList);
-        return productSearchService.searchProduct(attributeResponse, category);
+        date2 = new Date();
+        System.out.println(date2.getTime()-date1.getTime());
+        date1 = new Date();
+        //0.05 SEC
+        List<AttributeValue> attributeValues = productSearchService.mapAttributeValues(attributeResponse, category);
+        date2 = new Date();
+        System.out.println(date2.getTime()-date1.getTime());
+        date1 = new Date();
+
+        //0 SEC
+        userChatService.setAttributeValuesAndCategoryOfChat(chatId,attributeValues,category);
+        date2 = new Date();
+        System.out.println(date2.getTime()-date1.getTime());
+        date1 = new Date();
+        //3.5 SEC
+        var results = productSearchService.searchProduct(category, attributeValues);
+        date2 = new Date();
+        System.out.println(date2.getTime()-date1.getTime());
+        return results;
     }
 
     private Category determineCategory(String message) {
-        List<String> allCategoriesByParent = categoryService.findByParentCategoryIsNull().stream()
+        Set<String> allCategoriesByParent = new HashSet<>(categoryService.findByParentCategoryIsNull().stream()
                 .map(category -> category.toString().replace("\"", "")) // Remove quotation marks
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
         Optional<Category> optionalCategory = Optional.empty();
         boolean flag = true;
         while (flag) {
@@ -63,9 +102,9 @@ public class SearchService {
             }
 
             if (optionalCategory.isPresent()) {
-                allCategoriesByParent = categoryService.getCategoryByParentCategory(optionalCategory.get()).stream()
+                allCategoriesByParent = new HashSet<>(categoryService.getCategoryByParentCategory(optionalCategory.get()).stream()
                         .map(category -> category.toString().replace("\"", "")) // Remove quotation marks
-                        .toList();
+                        .collect(Collectors.toList()));
                 if (allCategoriesByParent.isEmpty()) {
                     flag = false;
                 }

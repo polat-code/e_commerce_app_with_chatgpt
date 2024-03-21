@@ -18,4 +18,5 @@ public class ProductListEntity extends ChatEntity{
 
     @DBRef
     private List<ProductResponse> searchProducts;
+
 }

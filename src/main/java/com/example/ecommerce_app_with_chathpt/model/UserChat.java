@@ -32,6 +32,13 @@ public class UserChat {
     @DBRef
     private List<ChatEntity> chatRecord;
 
+    @DBRef
+    private List<AttributeValue> attributeValues;
+
+    @DBRef
+    Category category;
+
+
     @Field
     private ChatState chatState;
 

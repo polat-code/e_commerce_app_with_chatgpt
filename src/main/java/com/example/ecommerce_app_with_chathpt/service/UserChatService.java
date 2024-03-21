@@ -1,19 +1,11 @@
 package com.example.ecommerce_app_with_chathpt.service;
 
-import com.example.ecommerce_app_with_chathpt.model.ChatEntity;
-import com.example.ecommerce_app_with_chathpt.model.MessageEntity;
-import com.example.ecommerce_app_with_chathpt.model.ProductListEntity;
-import com.example.ecommerce_app_with_chathpt.model.UserChat;
+import com.example.ecommerce_app_with_chathpt.model.*;
 import com.example.ecommerce_app_with_chathpt.model.enums.ChatState;
-import com.example.ecommerce_app_with_chathpt.repository.ChatEntityRepository;
-import com.example.ecommerce_app_with_chathpt.repository.MessageEntityRepository;
 import com.example.ecommerce_app_with_chathpt.repository.UserChatRepository;
-import com.example.ecommerce_app_with_chathpt.util.Prompts;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,85 +18,47 @@ public class UserChatService {
 
 
     private UserChatRepository userChatRepository;
-    private BotService botService;
     private ChatEntityService chatEntityService;
-    private MessageEntityService messageEntityService;
 
 
     public UserChat createChat() {
         ChatEntity chatEntity = chatEntityService.addChatEntity(MessageEntity.builder()
                 .messageContent("Hi Welcome to Wise")
+
                 .creationTime(Date.from(ZonedDateTime.now().toInstant())).build());
         List<ChatEntity> chatEntityList = new ArrayList<>();
         chatEntityList.add(chatEntity);
+        List<AttributeValue> attributeValues = new ArrayList<>();
+
         UserChat userChat = UserChat.builder().chatState(ChatState.INITIAL)
+                .attributeValues(attributeValues)
                 .chatRecord(chatEntityList).build();
 
 
         return userChatRepository.save(userChat);
     }
 
-    public ChatEntity sendMessage(String chatId, String message) throws JsonProcessingException {
-        addMessageToChat(chatId,message);
-        ChatState stateOfChat = getStateOfMessage(chatId);
-        ChatEntity chatEntityResponse = new ChatEntity() ;
-        String response= "";
-        if (stateOfChat.equals(ChatState.INITIAL)){
-            response = botService.intentExtraction(message);
-            // TODO Create the structure of state management.
-            // setStateOfChatForInitialState(chatId, response);
-            chatEntityResponse = botService.intentDirector(response,message);
+    public void setAttributeValuesAndCategoryOfChat(String chatId, List<AttributeValue> attributeValues, Category category) {
+        Optional<UserChat> optUserChat = userChatRepository.findById(chatId);
 
-        } else if (stateOfChat.equals(ChatState.SEARCH)) {
+        if (optUserChat.isPresent()){
+            UserChat userChat = optUserChat.get();
+            userChat.setAttributeValues(attributeValues);
+            userChat.setCategory(category);
+            userChatRepository.save(userChat);
 
         }
-        else if (stateOfChat.equals(ChatState.LOGIN)) {
-
-        }
-        else if (stateOfChat.equals(ChatState.REGISTER)) {
-
-        }
-
-        //addChatEntityToUserChat(chatId, chatEntityService.addChatEntity(chatEntityResponse));
-
-        return chatEntityResponse;
-
-
-
     }
 
-    private void setStateOfChatForInitialState(String chatId, String response) {
-        Optional<UserChat> userChat = userChatRepository.findById(chatId);
-        if (response.equals("search")){
-            userChat.get().setChatState(ChatState.SEARCH);
-            userChatRepository.save(userChat.get());
-        }
-
+    public List<AttributeValue> getChatAttributesById(String chatId) {
+        return userChatRepository.findAttributeValuesByChatId(chatId);
     }
 
-    private ChatState getStateOfMessage(String chatId) {
-        return userChatRepository.findById(chatId).get().getChatState();
+    public Optional<Category> getCategoryOfChat(String chatId) {
+        return userChatRepository.findChatCategoryByChatId(chatId);
     }
 
-
-    private void addMessageToChat(String chatId, String message){
-
-        ChatEntity chatEntity = MessageEntity.builder()
-                .creationTime(Date.from(ZonedDateTime.now().toInstant()))
-                .messageContent(message).build();
-
-        ChatEntity chatEntityFromRepo = chatEntityService.addChatEntity(chatEntity);
-        MessageEntity messageEntity = messageEntityService.addMessageEntity((MessageEntity) chatEntityFromRepo);
-        addChatEntityToUserChat(chatId, messageEntity);
-
-
-    }
-
-    private void addChatEntityToUserChat(String chatId, ChatEntity chatEntity){
-        Optional<UserChat> userChat = userChatRepository.findById(chatId);
-        if (userChat.isPresent()){
-            userChat.get().getChatRecord().add(chatEntity);
-            userChatRepository.save(userChat.get());
-        }
+    public Optional<UserChat> getUserChatById(String chatId) {
+        return userChatRepository.findById(chatId);
     }
 }
