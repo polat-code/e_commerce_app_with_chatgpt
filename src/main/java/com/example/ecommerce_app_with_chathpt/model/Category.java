@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @Builder
-@Document(collection = "category")
+@Document(collection = "categories")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Category {

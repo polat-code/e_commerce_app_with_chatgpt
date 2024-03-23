@@ -13,7 +13,7 @@
 
     import java.util.Date;
 
-    @Document("chat_entities")
+    @Document("chatEntities")
     @SuperBuilder
     @AllArgsConstructor
     @NoArgsConstructor

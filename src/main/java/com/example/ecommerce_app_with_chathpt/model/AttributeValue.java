@@ -14,7 +14,7 @@ import java.util.List;
 
 @Data
 @Builder
-@Document(collection = "product_attribute_value")
+@Document(collection = "attributeValues")
 public class AttributeValue {
 
     @Id

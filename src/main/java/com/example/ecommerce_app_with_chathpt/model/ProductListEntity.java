@@ -9,14 +9,13 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
-@TypeAlias("productLists")
+@TypeAlias("productListsEntities")
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 public class ProductListEntity extends ChatEntity{
 
-    @DBRef
     private List<ProductResponse> searchProducts;
 
 }

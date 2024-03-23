@@ -5,7 +5,7 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.TypeAlias;
 
 @EqualsAndHashCode(callSuper = true)
-@TypeAlias("messages")
+@TypeAlias("messageEntities")
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor

@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -97,6 +98,10 @@ public class ProductService {
 
     }
 
+
+    public List<Product> getAllProductsByCategoryAndAttributeValue(String category, List<String> attributeValues){
+        return productRepository.findProductsByCategoryAndAttributeValues(category,attributeValues);
+    }
 
     public List<Product> getAllProductsByCategory(Category category){
         return productRepository.findProductByCategory(category);

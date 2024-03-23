@@ -17,7 +17,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "user_chats")
+@Document(collection = "userChats")
 public class UserChat {
 
 

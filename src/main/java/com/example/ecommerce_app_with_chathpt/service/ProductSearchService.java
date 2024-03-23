@@ -24,41 +24,11 @@ public class ProductSearchService {
     public ChatEntity searchProduct(Category category,List<AttributeValue> attributeValues){
 
 
-        List<Product> categoryProducts = productService.getAllProductsByCategory(category);
-        //List<List<AttributeValue>> denemeAttributeValues = categoryProducts.stream().map(Product::getAttributeValues).toList();
-        //System.out.println(denemeAttributeValues.stream().map(attributeValues1 -> attributeValues1.stream().map(AttributeValue::getId).collect(Collectors.toList())).collect(Collectors.toList()));
-        //System.out.println(attributeValues.stream().map(AttributeValue::getId).collect(Collectors.toList()));
-        List<List<Product>> matchedProductsForAllAttributeValues = new ArrayList<>();
-        Map<Product,Integer> matchedProductsCounter = new HashMap<>();
-        for (Product product: categoryProducts){
-            List<Product> matchedProducts = new ArrayList<>();
-            matchedProductsCounter.put(product,0);
 
-            for (AttributeValue productAttributeValue :product.getAttributeValues()){
-
-                for (AttributeValue attributeValue: attributeValues){
-
-                    if (productAttributeValue.equals(attributeValue)){
-                        matchedProducts.add(product);
-                        matchedProductsCounter.put(product,matchedProductsCounter.get(product)+1);
-                    }
-                }
-
-            }
-            matchedProductsForAllAttributeValues.add(matchedProducts);
-
-
-        }
-
-        List<Map.Entry<Product, Integer>> list = new ArrayList<>(matchedProductsCounter.entrySet());
-        list.sort(Map.Entry.<Product, Integer>comparingByValue().reversed());
-
-        LinkedHashMap<Product, Integer> sortedMap = new LinkedHashMap<>();
-        for (Map.Entry<Product, Integer> entry : list) {
-            sortedMap.put(entry.getKey(), entry.getValue());
-        }
-
-        return productToProductListEntity(sortedMap.keySet().stream().toList());
+        List<Product>  foundProducts = productService.getAllProductsByCategoryAndAttributeValue(category.getId(),
+                attributeValues.stream().map(AttributeValue::getId).collect(Collectors.toList()));
+        System.out.println(productToProductListEntity(foundProducts));
+        return productToProductListEntity(foundProducts);
     }
 
 

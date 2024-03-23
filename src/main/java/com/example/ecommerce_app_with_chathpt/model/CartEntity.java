@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
-@TypeAlias("carts")
+@TypeAlias("cartsEntities")
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
