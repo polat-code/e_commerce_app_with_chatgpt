@@ -18,4 +18,6 @@ public interface UserChatRepository extends MongoRepository<UserChat, String> {
 
     @Query(value = "{ '_id': ?0 }", fields = "{ 'category': 1, '_id': 0 }")
     Optional<Category> findChatCategoryByChatId(String chatId);
+
+    List<UserChat> findAllByUser_Id(String id);
 }

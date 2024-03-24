@@ -4,8 +4,10 @@ package com.example.ecommerce_app_with_chathpt.service;
 import com.example.ecommerce_app_with_chathpt.config.OpenAIConfig;
 
 import com.example.ecommerce_app_with_chathpt.model.*;
+import com.example.ecommerce_app_with_chathpt.model.dto.ProductResponse;
 import com.example.ecommerce_app_with_chathpt.model.dto.request.ChatGPTRequest;
 import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatGPTResponse;
+import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatResponse;
 import com.example.ecommerce_app_with_chathpt.util.mapper.GptAttributeAndAttributeValuesJsonResponseToMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
@@ -87,9 +89,9 @@ public class BotService {
 
 
 
-    public ChatEntity intentDirectorInitialState(String intent, String message, String chatId) throws JsonProcessingException {
+    public ChatResponse intentDirectorInitialState(String intent, String message, String chatId) throws JsonProcessingException {
         String category;
-        ChatEntity chatEntityResponse = new ChatEntity();
+        ChatResponse chatEntityResponse = new ChatResponse();
 
         if (intent.equals("login")){
 
@@ -117,9 +119,9 @@ public class BotService {
         return chatEntityResponse;
     }
 
-    public ChatEntity intentDirectorSearchState(String intent, String message, String chatId) throws JsonProcessingException {
+    public ChatResponse intentDirectorSearchState(String intent, String message, String chatId) throws JsonProcessingException {
 
-        ChatEntity chatEntityResponse = new ChatEntity();
+        ChatResponse chatEntityResponse = new ChatResponse();
         if(intent.equals("search"))
         {
 

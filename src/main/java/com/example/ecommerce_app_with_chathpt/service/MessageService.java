@@ -4,6 +4,8 @@ import com.example.ecommerce_app_with_chathpt.model.AttributeValue;
 import com.example.ecommerce_app_with_chathpt.model.ChatEntity;
 import com.example.ecommerce_app_with_chathpt.model.MessageEntity;
 import com.example.ecommerce_app_with_chathpt.model.UserChat;
+import com.example.ecommerce_app_with_chathpt.model.dto.ProductResponse;
+import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatResponse;
 import com.example.ecommerce_app_with_chathpt.model.enums.ChatState;
 import com.example.ecommerce_app_with_chathpt.repository.UserChatRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,16 +27,16 @@ public class MessageService {
     private MessageEntityService messageEntityService;
 
 
-    public ChatEntity sendMessage(String chatId, String message) throws JsonProcessingException {
+    public ChatResponse sendMessage(String chatId, String message) throws JsonProcessingException {
         addMessageToChat(chatId,message);
         ChatState stateOfChat = getStateOfMessage(chatId);
-        ChatEntity chatEntityResponse = new ChatEntity() ;
+        ChatResponse chatEntityResponse = new ChatResponse() ;
         String response= "";
         if (stateOfChat.equals(ChatState.INITIAL)){
             response = botService.intentExtractionForInitialState(message);
             // TODO Create the structure of state management.
-            setStateOfChatForInitialState(chatId, response);
-            chatEntityResponse = botService.intentDirectorInitialState(response,message, chatId);
+            //setStateOfChatForInitialState(chatId, response);
+            chatEntityResponse = botService.intentDirectorInitialState(response, message, chatId);
 
         } else if (stateOfChat.equals(ChatState.SEARCH)) {
             response = botService.intentExtractionForSearchState(message);

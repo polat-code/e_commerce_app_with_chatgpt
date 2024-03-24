@@ -1,6 +1,8 @@
 package com.example.ecommerce_app_with_chathpt.service;
 
 import com.example.ecommerce_app_with_chathpt.model.*;
+import com.example.ecommerce_app_with_chathpt.model.dto.ProductResponse;
+import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatResponse;
 import com.example.ecommerce_app_with_chathpt.util.mapper.GptAttributeAndAttributeValuesJsonResponseToMapper;
 import com.example.ecommerce_app_with_chathpt.util.mapper.SearchAttributeKeyValueJsonMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -25,7 +27,7 @@ public class SearchService {
     private ChatGPTService chatGPTService;
     private UserChatService userChatService;
 
-    public ChatEntity searchByRequest(String message, String chatId) {
+    public ChatResponse searchByRequest(String message, String chatId) {
         Date date1 = new Date();
         //3.3 SEC
         Category category = determineCategory(message);
@@ -67,7 +69,7 @@ public class SearchService {
         System.out.println(date2.getTime()-date1.getTime());
         date1 = new Date();
         //3.5 SEC
-        var results = productSearchService.searchProduct(category, attributeValues);
+        ChatResponse results = productSearchService.searchProduct(category, attributeValues);
         date2 = new Date();
         System.out.println(date2.getTime()-date1.getTime());
         return results;

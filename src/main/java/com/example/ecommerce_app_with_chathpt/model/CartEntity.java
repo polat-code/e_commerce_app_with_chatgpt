@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 public class CartEntity extends ChatEntity{
 
-    @DBRef
-    private Product cartProduct;
+
+    private List<Product> cartProduct;
 
 }

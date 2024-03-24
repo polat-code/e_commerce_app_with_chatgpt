@@ -26,7 +26,7 @@ public class UserChat {
     private String id;
 
     @DBRef
-    private String user_id;
+    private User user;
 
 
     @DBRef

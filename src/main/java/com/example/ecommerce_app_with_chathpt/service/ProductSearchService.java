@@ -2,6 +2,7 @@ package com.example.ecommerce_app_with_chathpt.service;
 
 import com.example.ecommerce_app_with_chathpt.model.*;
 import com.example.ecommerce_app_with_chathpt.model.dto.ProductResponse;
+import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatResponse;
 import com.example.ecommerce_app_with_chathpt.repository.ChatEntityRepository;
 import com.example.ecommerce_app_with_chathpt.repository.ProductListRepository;
 import com.example.ecommerce_app_with_chathpt.util.mapper.GptAttributeAndAttributeValuesJsonResponseToMapper;
@@ -21,13 +22,13 @@ public class ProductSearchService {
     private ProductService productService;
 
 
-    public ChatEntity searchProduct(Category category,List<AttributeValue> attributeValues){
+    public ChatResponse searchProduct(Category category,List<AttributeValue> attributeValues){
 
 
 
         List<Product>  foundProducts = productService.getAllProductsByCategoryAndAttributeValue(category.getId(),
                 attributeValues.stream().map(AttributeValue::getId).collect(Collectors.toList()));
-        System.out.println(productToProductListEntity(foundProducts));
+
         return productToProductListEntity(foundProducts);
     }
 
@@ -50,23 +51,29 @@ public class ProductSearchService {
     }
 
 
-    private ChatEntity productToProductListEntity(List<Product> products){
+    private ChatResponse productToProductListEntity(List<Product> products){
+
+
 
         ProductListEntity chatEntity = ProductListEntity.builder()
                 .creationTime(Date.from(ZonedDateTime.now().toInstant()))
-                .searchProducts(products.stream().map((product -> ProductResponse.builder()
-                                .title(product.getTitle())
-                                .brand(product.getBrand())
-                                .url(product.getThumbnailImage())
-                                .inStock(product.isInStock())
-                                .price(product.getPrice())
-                                .productId(product.getId())
-                                .category(product.getCategory())
-                        .build()))
-                        .collect(Collectors.toList()))
+
                 .returnType("productList")
                 .build();
-        return chatEntity;
+
+        ChatResponse productChatResponse = ChatResponse.<List<ProductResponse>>builder()
+                .messageType("productList")
+                .productList(products.stream().map((product -> ProductResponse.builder()
+                        .title(product.getTitle())
+                        .brand(product.getBrand())
+                        .url(product.getThumbnailImage())
+                        .inStock(product.isInStock())
+                        .price(product.getPrice())
+                        .productId(product.getId())
+                        .category(product.getCategory())
+                        .build()))
+                .collect(Collectors.toList())).build();
+        return productChatResponse;
     }
 
 
