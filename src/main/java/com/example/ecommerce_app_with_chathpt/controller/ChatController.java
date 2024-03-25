@@ -25,7 +25,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/chats")
 @AllArgsConstructor
-@CrossOrigin("http://localhost:3000")
 @Slf4j
 public class ChatController {
 

@@ -67,11 +67,9 @@ public class UserChatService {
         return userChatRepository.findById(chatId);
     }
 
-    public List<UserChat> getAllChats() {
-        return userChatRepository.findAll();
-    }
 
     public List<UserChat> getAllChatsByConnectedUser(Principal connectedUser) {
+
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
         return userChatRepository.findAllByUser_Id(user.getId());
     }
