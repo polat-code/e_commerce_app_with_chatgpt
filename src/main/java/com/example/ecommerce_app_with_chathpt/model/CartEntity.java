@@ -16,6 +16,7 @@ import java.util.List;
 public class CartEntity extends ChatEntity{
 
 
-    private List<Product> cartProduct;
+    private List<ProductQuantity> productQuantities;
+    private double totalPrice;
 
 }

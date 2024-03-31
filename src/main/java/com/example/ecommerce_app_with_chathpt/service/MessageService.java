@@ -1,20 +1,19 @@
 package com.example.ecommerce_app_with_chathpt.service;
 
-import com.example.ecommerce_app_with_chathpt.model.AttributeValue;
 import com.example.ecommerce_app_with_chathpt.model.ChatEntity;
 import com.example.ecommerce_app_with_chathpt.model.MessageEntity;
 import com.example.ecommerce_app_with_chathpt.model.UserChat;
-import com.example.ecommerce_app_with_chathpt.model.dto.ProductResponse;
 import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatResponse;
 import com.example.ecommerce_app_with_chathpt.model.enums.ChatState;
+import com.example.ecommerce_app_with_chathpt.model.enums.MessageType;
 import com.example.ecommerce_app_with_chathpt.repository.UserChatRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,26 +22,27 @@ public class MessageService {
 
     private UserChatRepository userChatRepository;
     private BotService botService;
-    private ChatEntityService chatEntityService;
-    private MessageEntityService messageEntityService;
+    private UserChatService userChatService;
 
 
-    public ChatResponse sendMessage(String chatId, String message) throws JsonProcessingException {
+
+    public ChatResponse sendMessage(Principal connectedUser, String chatId, String message) throws JsonProcessingException {
         addMessageToChat(chatId,message);
         ChatState stateOfChat = getStateOfMessage(chatId);
+        System.out.println(message);
         ChatResponse chatEntityResponse = new ChatResponse() ;
         String response= "";
         if (stateOfChat.equals(ChatState.INITIAL)){
             response = botService.intentExtractionForInitialState(message);
             // TODO Create the structure of state management.
             //setStateOfChatForInitialState(chatId, response);
-            chatEntityResponse = botService.intentDirectorInitialState(response, message, chatId);
+            chatEntityResponse = botService.intentDirectorInitialState(connectedUser, response, message, chatId);
 
         } else if (stateOfChat.equals(ChatState.SEARCH)) {
             response = botService.intentExtractionForSearchState(message);
             // TODO Create the structure of state management.
             // setStateOfChatForInitialState(chatId, response);
-            chatEntityResponse = botService.intentDirectorSearchState(response,message, chatId);
+            chatEntityResponse = botService.intentDirectorSearchState(connectedUser,response,message, chatId);
 
         }
         else if (stateOfChat.equals(ChatState.LOGIN)) {
@@ -53,7 +53,7 @@ public class MessageService {
         }
 
         //addChatEntityToUserChat(chatId, chatEntityService.addChatEntity(chatEntityResponse));
-
+        userChatService.addChatResponseToChat(connectedUser, chatId, chatEntityResponse);
         return chatEntityResponse;
 
 
@@ -76,21 +76,19 @@ public class MessageService {
 
     private void addMessageToChat(String chatId, String message){
 
-        ChatEntity chatEntity = MessageEntity.builder()
-                .creationTime(Date.from(ZonedDateTime.now().toInstant()))
-                .messageContent(message).build();
-
-        ChatEntity chatEntityFromRepo = chatEntityService.addChatEntity(chatEntity);
-        MessageEntity messageEntity = messageEntityService.addMessageEntity((MessageEntity) chatEntityFromRepo);
-        addChatEntityToUserChat(chatId, messageEntity);
+        ChatResponse chatResponse = ChatResponse.builder()
+                .messageType(MessageType.chatMessage)
+                .message(message)
+                .build();
+        addChatEntityToUserChat(chatId, chatResponse);
 
 
     }
 
-    private void addChatEntityToUserChat(String chatId, ChatEntity chatEntity){
+    private void addChatEntityToUserChat(String chatId, ChatResponse chatResponse){
         Optional<UserChat> userChat = userChatRepository.findById(chatId);
         if (userChat.isPresent()){
-            userChat.get().getChatRecord().add(chatEntity);
+            userChat.get().getChatRecord().add(chatResponse);
             userChatRepository.save(userChat.get());
         }
     }

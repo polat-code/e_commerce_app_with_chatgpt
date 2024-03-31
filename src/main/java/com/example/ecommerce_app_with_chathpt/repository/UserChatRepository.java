@@ -20,4 +20,6 @@ public interface UserChatRepository extends MongoRepository<UserChat, String> {
     Optional<Category> findChatCategoryByChatId(String chatId);
 
     List<UserChat> findAllByUser_Id(String id);
+
+    Optional<UserChat> findUserChatByIdAndUser_Id(String id,String userId);
 }

@@ -2,6 +2,7 @@ package com.example.ecommerce_app_with_chathpt.service;
 
 import com.example.ecommerce_app_with_chathpt.model.AttributeValue;
 import com.example.ecommerce_app_with_chathpt.model.ChatEntity;
+import com.example.ecommerce_app_with_chathpt.util.mapper.BuyProductResponseToMapper;
 import com.example.ecommerce_app_with_chathpt.util.mapper.GptAttributeAndAttributeValuesJsonResponseToMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -74,14 +75,43 @@ public class SearchStateService {
     }
 
 
-    public ChatEntity buyProduct(String message, String chatId){
-        return new ChatEntity();
+    public BuyProductResponseToMapper buyProduct(String message, String chatId){
+        return new BuyProductResponseToMapper();
     }
 
 
-    public ChatEntity addToCartProduct(String message, String chatId){
-        return new ChatEntity();
+    public BuyProductResponseToMapper addToCartProduct(String message, String chatId){
+        String prompt = "Given a user request for products, extract the product index and quantity. " +
+                "Assume a default quantity of 1 if not specified.\n" +
+                "Examples:\n" +
+                "1. Request: \"I want to buy product 3.\"\n" +
+                "   Output: {\"index\": 3, \"quantity\": 1}\n" +
+                "2. Request: \"Add 2 units of second product to my cart.\"\n" +
+                "   Output: {\"index\": 2, \"quantity\": 2}\n" +
+                "3. Request: \"I'd like to purchase product 1.\"\n" +
+                "   Output: {\"index\": 1, \"quantity\": 1}\n" +
+                "4. Request: \"Can I get 4 of product 9?\"\n" +
+                "   Output: {\"index\": 9, \"quantity\": 4}";
+
+
+        String buyProductResponseFromGpt = chatGPTService.sendRequestToChatGPT(message, prompt);
+        BuyProductResponseToMapper buyProductResponseToMapper = new BuyProductResponseToMapper();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            buyProductResponseToMapper = objectMapper
+                    .readValue(buyProductResponseFromGpt,
+                            new TypeReference<>() {
+                            });
+        } catch (IOException e) {
+            e.getMessage();
+        }
+
+
+
+        return buyProductResponseToMapper;
     }
+
 
 
 }

@@ -1,18 +1,23 @@
 package com.example.ecommerce_app_with_chathpt.service;
 
 import com.example.ecommerce_app_with_chathpt.model.*;
+import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatRecordResponse;
+import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatResponse;
+import com.example.ecommerce_app_with_chathpt.model.dto.response.ProductResponse;
 import com.example.ecommerce_app_with_chathpt.model.enums.ChatState;
+import com.example.ecommerce_app_with_chathpt.model.enums.MessageType;
 import com.example.ecommerce_app_with_chathpt.repository.UserChatRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -20,24 +25,24 @@ public class UserChatService {
 
 
     private UserChatRepository userChatRepository;
-    private ChatEntityService chatEntityService;
     private UserService userService;
 
 
     public UserChat createChat(Principal connectedUser) {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
-        ChatEntity chatEntity = chatEntityService.addChatEntity(MessageEntity.builder()
-                .messageContent("Hi Welcome to Wise")
+        ChatResponse chatResponse = ChatResponse.builder()
+                .messageType(MessageType.chatMessage)
+                .build();
 
-                .creationTime(Date.from(ZonedDateTime.now().toInstant())).build());
-        List<ChatEntity> chatEntityList = new ArrayList<>();
-        chatEntityList.add(chatEntity);
+
+        List<ChatResponse> chatResponseList = new ArrayList<>();
+        chatResponseList.add(chatResponse);
         List<AttributeValue> attributeValues = new ArrayList<>();
         Optional<User> optionalUser = userService.findById(user.getId());
         UserChat userChat = UserChat.builder().chatState(ChatState.INITIAL)
                 .attributeValues(attributeValues)
                 .user(optionalUser.get())
-                .chatRecord(chatEntityList).build();
+                .chatRecord(chatResponseList).build();
 
 
         return userChatRepository.save(userChat);
@@ -72,5 +77,54 @@ public class UserChatService {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
         return userChatRepository.findAllByUser_Id(user.getId());
+    }
+
+    public void addChatResponseToChat(Principal connectedUser, String chatId, ChatResponse chatResponse){
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        Optional<UserChat> optionalUserChat = userChatRepository.findUserChatByIdAndUser_Id(chatId,user.getId());
+        if (optionalUserChat.isPresent()){
+            optionalUserChat.get().getChatRecord().add(chatResponse);
+            userChatRepository.save(optionalUserChat.get());
+        }
+    }
+
+    public ResponseEntity<ChatRecordResponse> getChatRecords(Principal connectedUser, String chatId) {
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        Optional<UserChat> userChat = userChatRepository.findUserChatByIdAndUser_Id(chatId,user.getId());
+
+        if (userChat.isPresent()){
+            ChatRecordResponse chatRecordResponse = ChatRecordResponse.builder()
+                    .chatResponses(userChat.get().getChatRecord())
+                    .build();
+            return new ResponseEntity<>(chatRecordResponse,HttpStatus.OK) ;
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+    }
+
+    public ProductResponse findProductWithIndex(int index, Principal connectedUser, String chatId){
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        Optional<UserChat> userChat = userChatRepository.findUserChatByIdAndUser_Id(chatId, user.getId());
+        if (userChat.isPresent()){
+            List<ChatResponse> chatResponse = userChat.get().getChatRecord();
+            List<ChatResponse> productChatResponse = chatResponse.stream()
+                    .filter(cr -> cr.getMessageType().equals(MessageType.productList))
+                    .toList();
+            return productChatResponse.get(productChatResponse.size()-1).getProductList().get(index);
+        }
+        return  null;
+    }
+
+    public void setStateForSearch(String chatId) {
+        UserChat userChat = userChatRepository.findById(chatId).get();
+        userChat.setChatState(ChatState.SEARCH);
+        userChatRepository.save(userChat);
+    }
+
+    public void setStateForInitial(String chatId) {
+        UserChat userChat = userChatRepository.findById(chatId).get();
+        userChat.setChatState(ChatState.INITIAL);
+        userChatRepository.save(userChat);
     }
 }

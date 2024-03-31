@@ -1,14 +1,12 @@
 package com.example.ecommerce_app_with_chathpt.service;
 
 import com.example.ecommerce_app_with_chathpt.model.*;
-import com.example.ecommerce_app_with_chathpt.model.dto.ProductResponse;
 import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatResponse;
 import com.example.ecommerce_app_with_chathpt.util.mapper.GptAttributeAndAttributeValuesJsonResponseToMapper;
 import com.example.ecommerce_app_with_chathpt.util.mapper.SearchAttributeKeyValueJsonMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -72,6 +70,8 @@ public class SearchService {
         ChatResponse results = productSearchService.searchProduct(category, attributeValues);
         date2 = new Date();
         System.out.println(date2.getTime()-date1.getTime());
+
+
         return results;
     }
 

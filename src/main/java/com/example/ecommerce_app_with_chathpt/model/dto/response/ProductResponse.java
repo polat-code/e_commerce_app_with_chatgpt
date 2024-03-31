@@ -1,4 +1,4 @@
-package com.example.ecommerce_app_with_chathpt.model.dto;
+package com.example.ecommerce_app_with_chathpt.model.dto.response;
 
 import com.example.ecommerce_app_with_chathpt.model.Category;
 import lombok.AllArgsConstructor;

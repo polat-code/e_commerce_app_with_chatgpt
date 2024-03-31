@@ -1,8 +1,7 @@
 package com.example.ecommerce_app_with_chathpt.controller;
 
-import com.example.ecommerce_app_with_chathpt.model.ChatEntity;
-import com.example.ecommerce_app_with_chathpt.model.User;
 import com.example.ecommerce_app_with_chathpt.model.UserChat;
+import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatRecordResponse;
 import com.example.ecommerce_app_with_chathpt.model.dto.request.SendMessageChatRequest;
 import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatResponse;
 import com.example.ecommerce_app_with_chathpt.service.MessageService;
@@ -11,15 +10,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -49,14 +43,23 @@ public class ChatController {
     }
 
     @PostMapping("/chat")
-    public ResponseEntity<ChatResponse>  sendMessage(@RequestBody SendMessageChatRequest sendMessageChatRequest) throws JsonProcessingException {
-
+    public ResponseEntity<ChatResponse>  sendMessage(Principal connectedUser, @RequestBody SendMessageChatRequest sendMessageChatRequest) throws JsonProcessingException {
+        System.out.println(sendMessageChatRequest);
         log.info(sendMessageChatRequest.getMessage());
         log.info(sendMessageChatRequest.getChatId());
-        ChatResponse chatEntity = messageService.sendMessage(sendMessageChatRequest.getChatId(), sendMessageChatRequest.getMessage());
-        System.out.println(chatEntity);
-        return new ResponseEntity<>(chatEntity,HttpStatus.OK);
+        ChatResponse chatResponse = messageService.sendMessage(connectedUser,sendMessageChatRequest.getChatId(), sendMessageChatRequest.getMessage());
+
+        return new ResponseEntity<>(chatResponse,HttpStatus.OK);
     }
+
+
+    @GetMapping("/chat/{chatId}")
+    public ResponseEntity<ChatRecordResponse> getChatRecord(Principal connectedUser, @PathVariable String chatId){
+        System.out.println(chatId);
+        return userChatService.getChatRecords(connectedUser, chatId);
+    }
+
+
 
 /*
 

@@ -1,10 +1,9 @@
 package com.example.ecommerce_app_with_chathpt.service;
 
 import com.example.ecommerce_app_with_chathpt.model.*;
-import com.example.ecommerce_app_with_chathpt.model.dto.ProductResponse;
+import com.example.ecommerce_app_with_chathpt.model.dto.response.ProductResponse;
 import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatResponse;
-import com.example.ecommerce_app_with_chathpt.repository.ChatEntityRepository;
-import com.example.ecommerce_app_with_chathpt.repository.ProductListRepository;
+import com.example.ecommerce_app_with_chathpt.model.enums.MessageType;
 import com.example.ecommerce_app_with_chathpt.util.mapper.GptAttributeAndAttributeValuesJsonResponseToMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -62,7 +61,7 @@ public class ProductSearchService {
                 .build();
 
         ChatResponse productChatResponse = ChatResponse.<List<ProductResponse>>builder()
-                .messageType("productList")
+                .messageType(MessageType.productList)
                 .productList(products.stream().map((product -> ProductResponse.builder()
                         .title(product.getTitle())
                         .brand(product.getBrand())
@@ -75,6 +74,8 @@ public class ProductSearchService {
                 .collect(Collectors.toList())).build();
         return productChatResponse;
     }
+
+
 
 
 

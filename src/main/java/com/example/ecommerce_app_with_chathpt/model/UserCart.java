@@ -1,7 +1,5 @@
 package com.example.ecommerce_app_with_chathpt.model;
 
-import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatResponse;
-import com.example.ecommerce_app_with_chathpt.model.enums.ChatState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,12 +14,10 @@ import java.util.List;
 
 @Data
 @Builder
+@Document(collection = "userCarts")
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "userChats")
-public class UserChat {
-
-
+public class UserCart {
 
     @Id
     private String id;
@@ -29,19 +25,12 @@ public class UserChat {
     @DBRef
     private User user;
 
-
-    @Field(targetType = FieldType.ARRAY)
-    private List<ChatResponse> chatRecord;
-
     @DBRef
-    private List<AttributeValue> attributeValues;
+    private List<Product> cartProducts;
 
-    @DBRef
-    Category category;
+    @Field(targetType = FieldType.DOUBLE)
+    private Double totalPrice;
 
-
-    @Field
-    private ChatState chatState;
 
 
 }
