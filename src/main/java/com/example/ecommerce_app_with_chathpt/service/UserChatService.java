@@ -127,4 +127,10 @@ public class UserChatService {
         userChat.setChatState(ChatState.INITIAL);
         userChatRepository.save(userChat);
     }
+
+    public void setStateForCart(String chatId) {
+        UserChat userChat = userChatRepository.findById(chatId).get();
+        userChat.setChatState(ChatState.CART);
+        userChatRepository.save(userChat);
+    }
 }

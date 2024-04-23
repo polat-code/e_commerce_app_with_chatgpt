@@ -5,5 +5,7 @@ public enum ChatState {
     SEARCH,
     LOGIN,
     REGISTER,
-    INITIAL
+    INITIAL,
+
+    CART
 }

@@ -25,8 +25,8 @@ public class UserCart {
     @DBRef
     private User user;
 
-    @DBRef
-    private List<Product> cartProducts;
+
+    private List<CartProduct> cartProducts;
 
     @Field(targetType = FieldType.DOUBLE)
     private Double totalPrice;

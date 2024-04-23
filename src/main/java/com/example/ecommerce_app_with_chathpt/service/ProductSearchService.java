@@ -53,13 +53,6 @@ public class ProductSearchService {
     private ChatResponse productToProductListEntity(List<Product> products){
 
 
-
-        ProductListEntity chatEntity = ProductListEntity.builder()
-                .creationTime(Date.from(ZonedDateTime.now().toInstant()))
-
-                .returnType("productList")
-                .build();
-
         ChatResponse productChatResponse = ChatResponse.<List<ProductResponse>>builder()
                 .messageType(MessageType.productList)
                 .productList(products.stream().map((product -> ProductResponse.builder()

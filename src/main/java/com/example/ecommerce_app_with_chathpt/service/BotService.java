@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,6 +98,7 @@ public class BotService {
         {
             UserCart userCart = userCartService.getByUserId(connectedUser).get();
             System.out.println(userCart.getCartProducts());
+            userChatService.setStateForCart(chatId);
 
         }
         else {
@@ -114,13 +114,13 @@ public class BotService {
         ChatResponse chatEntityResponse = new ChatResponse();
         if(intent.equals("search"))
         {
-
-            searchService.searchByRequest(message, chatId);
+            chatEntityResponse = searchService.searchByRequest(message, chatId);
 
         }
 
         else if(intent.equals("remove feature"))
         {
+            //TODO Should be removed but it did not remove
             Optional<UserChat> userChat = userChatService.getUserChatById(chatId);
 
             List<GptAttributeAndAttributeValuesJsonResponseToMapper> attributeValueList = searchStateService.removeAttributes(message, userChat.get().getAttributeValues());
@@ -133,32 +133,32 @@ public class BotService {
         }
         else if(intent.equals("add feature"))
         {
-            searchStateService.addAttributes(message, chatId);
+            //TODO Should be implemented
+
         }
         else if(intent.equals("buy product"))
         {
 
             //TODO buy product and add to cart should call same methods
             System.out.println(message);
-            BuyProductResponseToMapper buyProductResponseToMapper = searchStateService.buyProduct(message, chatId);
+            BuyProductResponseToMapper buyProductResponseToMapper = searchStateService.buyProduct(message);
             System.out.println(buyProductResponseToMapper);
             ProductResponse productResponse = userChatService.findProductWithIndex(buyProductResponseToMapper.getIndex(),connectedUser,chatId);
 
             Optional<Product> product = productService.getProductById(productResponse.getProductId());
 
-            userCartService.addProductToUserCart(connectedUser, product.get());
+            userCartService.addProductToUserCart(connectedUser, product.get(), buyProductResponseToMapper.getQuantity());
             
 
         }
         else if(intent.equals("add to cart"))
         {
-            BuyProductResponseToMapper buyProductResponseToMapper = searchStateService.buyProduct(message, chatId);
-            System.out.println(buyProductResponseToMapper);
+            BuyProductResponseToMapper buyProductResponseToMapper = searchStateService.buyProduct(message);
             ProductResponse productResponse = userChatService.findProductWithIndex(buyProductResponseToMapper.getIndex(),connectedUser,chatId);
 
             Optional<Product> product = productService.getProductById(productResponse.getProductId());
 
-            userCartService.addProductToUserCart(connectedUser, product.get());
+            userCartService.addProductToUserCart(connectedUser, product.get(), buyProductResponseToMapper.getQuantity());
 
 
 
@@ -183,6 +183,65 @@ public class BotService {
 
         return chatEntityResponse;
     }
+
+    public ChatResponse intentDirectorCartState(Principal connectedUser, String intent, String message, String chatId) throws JsonProcessingException {
+
+        ChatResponse chatEntityResponse = new ChatResponse();
+        if(intent.equals("remove product from cart"))
+        {
+
+        }
+        else if(intent.equals("increase product quantity"))
+        {
+
+        }
+        else if(intent.equals("decrease product quantity"))
+        {
+
+            //TODO buy product and add to cart should call same methods
+            System.out.println(message);
+            BuyProductResponseToMapper buyProductResponseToMapper = searchStateService.buyProduct(message);
+            System.out.println(buyProductResponseToMapper);
+            ProductResponse productResponse = userChatService.findProductWithIndex(buyProductResponseToMapper.getIndex(),connectedUser,chatId);
+
+            Optional<Product> product = productService.getProductById(productResponse.getProductId());
+
+            userCartService.addProductToUserCart(connectedUser, product.get(), buyProductResponseToMapper.getQuantity());
+
+
+        }
+        else if(intent.equals("update product quantity"))
+        {
+            BuyProductResponseToMapper buyProductResponseToMapper = searchStateService.buyProduct(message);
+            ProductResponse productResponse = userChatService.findProductWithIndex(buyProductResponseToMapper.getIndex(),connectedUser,chatId);
+
+            Optional<Product> product = productService.getProductById(productResponse.getProductId());
+
+            userCartService.addProductToUserCart(connectedUser, product.get(), buyProductResponseToMapper.getQuantity());
+
+
+
+        }
+
+        else if (intent.equals("exit")){
+
+            //TODO Set state to initial state
+            userChatService.setStateForInitial(chatId);
+            return ChatResponse.builder().message("You are now in initial state")
+                    .messageType(MessageType.chatMessage)
+                    .build();
+
+        }
+        else {
+            throw new RuntimeException();
+        }
+
+
+
+
+        return chatEntityResponse;
+    }
+
 
 
 

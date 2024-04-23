@@ -1,7 +1,5 @@
 package com.example.ecommerce_app_with_chathpt.service;
 
-import com.example.ecommerce_app_with_chathpt.model.ChatEntity;
-import com.example.ecommerce_app_with_chathpt.model.MessageEntity;
 import com.example.ecommerce_app_with_chathpt.model.UserChat;
 import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatResponse;
 import com.example.ecommerce_app_with_chathpt.model.enums.ChatState;
@@ -12,8 +10,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.Optional;
 
 @Service

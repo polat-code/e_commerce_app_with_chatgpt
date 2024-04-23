@@ -19,6 +19,6 @@ public class ChatResponse{
     private String message;
     private List<ProductResponse> productList;
     private Double totalPrice;
-    private Map<Product,Integer> cart;
+    private CartResponse cartResponse;
 
 }
