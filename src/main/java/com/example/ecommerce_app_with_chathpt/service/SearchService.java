@@ -45,17 +45,22 @@ public class SearchService {
         date2 = new Date();
         System.out.println(date2.getTime()-date1.getTime());
         date1 = new Date();
+
         //0
         List<SearchAttributeKeyValueJsonMapper> attributeKeyValueJsonMapperList = mapAttributesToJsonMapper(possibleAttributeValues);
         date2 = new Date();
         System.out.println(date2.getTime()-date1.getTime());
+
         date1 = new Date();
         //3 SEC
         List<GptAttributeAndAttributeValuesJsonResponseToMapper> attributeResponse = getAttributeResponseFromChatGPT(message, attributeKeyValueJsonMapperList);
+
         date2 = new Date();
         System.out.println(date2.getTime()-date1.getTime());
         date1 = new Date();
         //0.05 SEC
+
+
         List<AttributeValue> attributeValues = productSearchService.mapAttributeValues(attributeResponse, category);
         date2 = new Date();
         System.out.println(date2.getTime()-date1.getTime());
@@ -67,12 +72,12 @@ public class SearchService {
         System.out.println(date2.getTime()-date1.getTime());
         date1 = new Date();
         //3.5 SEC
-        ChatResponse results = productSearchService.searchProduct(category, attributeValues);
-        date2 = new Date();
-        System.out.println(date2.getTime()-date1.getTime());
+        if (attributeValues.isEmpty()){
+            return productSearchService.searchProductWithCategory(category);
+        }else {
+            return productSearchService.searchProduct(category, attributeValues);
+        }
 
-
-        return results;
     }
 
     private Category determineCategory(String message) {
@@ -91,7 +96,7 @@ public class SearchService {
                     "{'input': 'I want to buy a dress.', 'output': Clothing}]";
             String categoryResponse = chatGPTService.sendRequestToChatGPT(message, manipulatedMessage);
             String fixedCategoryResponse = categoryResponse.replace("\"", "");
-
+            System.out.println(fixedCategoryResponse);
             if (!allCategoriesByParent.contains(fixedCategoryResponse)){
                 optionalCategory = categoryService.getCategoryByCategoryNameAndParentCategoryName(fixedCategoryResponse, optionalCategory.get());
                 break;
@@ -146,7 +151,9 @@ public class SearchService {
     }
 
     private List<GptAttributeAndAttributeValuesJsonResponseToMapper> getAttributeResponseFromChatGPT(String message, List<SearchAttributeKeyValueJsonMapper> attributeKeyValueJsonMapperList) {
-        String prompt = attributeKeyValueJsonMapperList.toString();
+        List<SearchAttributeKeyValueJsonMapper> prompt = attributeKeyValueJsonMapperList.subList(0, Math.min(15, attributeKeyValueJsonMapperList.size()));
+
+
         String manipulatedPrompt = "I have a user request and I have the features of a category." +
                 " I need to extract the features of this category according to the user's request." +
                 " Do not return to me features that are not requested by the user." +
@@ -167,9 +174,14 @@ public class SearchService {
                 "    ]" +
                 "}" +
                 "Response:  [{\"key\": \"Item Weight\", \"values\": [\"23 pounds\"]},\"]";
+
+
+
         String attributeResponseFromChatGPT = chatGPTService.sendRequestToChatGPT(message, manipulatedPrompt);
+
         attributeResponseFromChatGPT = attributeResponseFromChatGPT.replace("Response: ", "");
         List<GptAttributeAndAttributeValuesJsonResponseToMapper> attributeValuesJsonResponseToMapperList = new ArrayList<>();
+
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             attributeValuesJsonResponseToMapperList = objectMapper

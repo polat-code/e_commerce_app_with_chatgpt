@@ -8,7 +8,6 @@ import com.example.ecommerce_app_with_chathpt.util.mapper.GptAttributeAndAttribu
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,7 +27,7 @@ public class ProductSearchService {
         List<Product>  foundProducts = productService.getAllProductsByCategoryAndAttributeValue(category.getId(),
                 attributeValues.stream().map(AttributeValue::getId).collect(Collectors.toList()));
 
-        return productToProductListEntity(foundProducts);
+        return productToChatResponse(foundProducts);
     }
 
 
@@ -50,7 +49,7 @@ public class ProductSearchService {
     }
 
 
-    private ChatResponse productToProductListEntity(List<Product> products){
+    private ChatResponse productToChatResponse(List<Product> products){
 
 
         ChatResponse productChatResponse = ChatResponse.<List<ProductResponse>>builder()
@@ -69,10 +68,9 @@ public class ProductSearchService {
     }
 
 
+    public ChatResponse searchProductWithCategory(Category category) {
 
-
-
-
-
-
+        List<Product>  foundProducts = productService.getAllProductsByCategory(category);
+        return productToChatResponse(foundProducts);
+    }
 }
