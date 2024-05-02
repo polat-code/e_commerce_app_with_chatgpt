@@ -6,5 +6,6 @@ public enum MessageType {
     chatMessage,
     productList,
     user,
-    cart
+    cart,
+    botMessage
 }

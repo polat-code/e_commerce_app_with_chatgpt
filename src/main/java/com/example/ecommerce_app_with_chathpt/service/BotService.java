@@ -170,7 +170,7 @@ public class BotService {
             userChatService.setStateForInitial(chatId);
 
             return ChatResponse.builder().message("You are now in initial state")
-                     .messageType(MessageType.chatMessage)
+                     .messageType(MessageType.botMessage)
                      .build();
 
         }
@@ -228,7 +228,7 @@ public class BotService {
             //TODO Set state to initial state
             userChatService.setStateForInitial(chatId);
             return ChatResponse.builder().message("You are now in initial state")
-                    .messageType(MessageType.chatMessage)
+                    .messageType(MessageType.botMessage)
                     .build();
 
         }

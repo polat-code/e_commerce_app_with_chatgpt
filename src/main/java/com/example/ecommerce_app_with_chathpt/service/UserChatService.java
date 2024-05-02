@@ -17,7 +17,6 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -31,7 +30,7 @@ public class UserChatService {
     public UserChat createChat(Principal connectedUser) {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
         ChatResponse chatResponse = ChatResponse.builder()
-                .messageType(MessageType.chatMessage)
+                .messageType(MessageType.botMessage)
                 .build();
 
 

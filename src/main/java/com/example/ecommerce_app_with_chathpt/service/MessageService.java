@@ -73,7 +73,7 @@ public class MessageService {
     private void addMessageToChat(String chatId, String message){
 
         ChatResponse chatResponse = ChatResponse.builder()
-                .messageType(MessageType.chatMessage)
+                .messageType(MessageType.botMessage)
                 .message(message)
                 .build();
         addChatEntityToUserChat(chatId, chatResponse);
