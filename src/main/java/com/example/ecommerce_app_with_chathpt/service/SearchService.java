@@ -33,44 +33,40 @@ public class SearchService {
         Date date2 = new Date();
         System.out.println(date2.getTime()-date1.getTime());
 
-        date1 = new Date();
+
         //0.05 SEC
         List<Attribute> attributes = attributeService.getAllAttributesByCategory(category);
-        date2 = new Date();
-        System.out.println(date2.getTime()-date1.getTime());
-        date1 = new Date();
+        List<String> attributeNames = attributes.stream().map(Attribute::getName).toList();
+        List<String> attributeResponseFromGpt = getAttributeResponseFromChatGPT(message, attributeNames);
+        System.out.println(attributeResponseFromGpt);
+        List<Attribute> relatedAttributes = attributeService.getAttributeListByListOfAttributeName(category, attributeResponseFromGpt);
+
+
         //1 SEC
-        Map<Attribute, List<AttributeValue>> possibleAttributeValues = getPossibleAttributeValues(attributes);
+        Map<Attribute, List<AttributeValue>> possibleAttributeValues = getPossibleAttributeValues(relatedAttributes);
 
-        date2 = new Date();
-        System.out.println(date2.getTime()-date1.getTime());
-        date1 = new Date();
 
+
+
+
+
+        ///////////
         //0
         List<SearchAttributeKeyValueJsonMapper> attributeKeyValueJsonMapperList = mapAttributesToJsonMapper(possibleAttributeValues);
-        date2 = new Date();
         System.out.println(date2.getTime()-date1.getTime());
-        System.out.println(attributeKeyValueJsonMapperList);
         date1 = new Date();
         //3 SEC
-        List<GptAttributeAndAttributeValuesJsonResponseToMapper> attributeResponse = getAttributeResponseFromChatGPT(message, attributeKeyValueJsonMapperList);
-        System.out.println(attributeResponse);
-        date2 = new Date();
-        System.out.println(date2.getTime()-date1.getTime());
-        date1 = new Date();
+        List<GptAttributeAndAttributeValuesJsonResponseToMapper> attributeResponse = getAttributeValueResponseFromChatGPT(message, attributeKeyValueJsonMapperList);
+
         //0.05 SEC
 
 
         List<AttributeValue> attributeValues = productSearchService.mapAttributeValues(attributeResponse, category);
-        date2 = new Date();
         System.out.println(attributeValues);
-        System.out.println(date2.getTime()-date1.getTime());
         date1 = new Date();
 
         //0 SEC
         userChatService.setAttributeValuesAndCategoryOfChat(chatId,attributeValues,category);
-        date2 = new Date();
-        System.out.println(date2.getTime()-date1.getTime());
         date1 = new Date();
         //3.5 SEC
         if (attributeValues.isEmpty()){
@@ -80,6 +76,7 @@ public class SearchService {
         }
 
     }
+
 
     private Category determineCategory(String message) {
         Set<String> allCategoriesByParent = new HashSet<>(categoryService.findByParentCategoryIsNull().stream()
@@ -154,7 +151,7 @@ public class SearchService {
         return attributeKeyValueJsonMapperList;
     }
 
-    private List<GptAttributeAndAttributeValuesJsonResponseToMapper> getAttributeResponseFromChatGPT(String message, List<SearchAttributeKeyValueJsonMapper> attributeKeyValueJsonMapperList) {
+    private List<GptAttributeAndAttributeValuesJsonResponseToMapper> getAttributeValueResponseFromChatGPT(String message, List<SearchAttributeKeyValueJsonMapper> attributeKeyValueJsonMapperList) {
         List<SearchAttributeKeyValueJsonMapper> prompt = attributeKeyValueJsonMapperList.subList(0, Math.min(15, attributeKeyValueJsonMapperList.size()));
 
 
@@ -197,4 +194,38 @@ public class SearchService {
         }
         return attributeValuesJsonResponseToMapperList.stream().map(x -> new GptAttributeAndAttributeValuesJsonResponseToMapper(x.getKey(), x.getValues())).toList();
     }
+
+
+    private List<String> getAttributeResponseFromChatGPT(String message, List<String> attributeNames) {
+
+        String manipulatedPrompt = "I have a user request and I have the feature names of a category." +
+                " I need to extract the feature names of this category according to the user's request." +
+                " Do not return to me features that are not requested by the user." +
+                " You just have to return me the feature names not their details the user requested in the format I sent them.must return only array" +
+                " If there are no features, send me an empty string." +
+                "Notice that returned features are from my features." + " Features:" + attributeNames + "." +
+                "For example, User Request: I want to buy for a Nail Care Products,Features:{" +
+                "    [" +
+                "        Item Weight, Country of Origin" +
+                "    ]" +
+                "Response: []" +
+                "For example, User Request: I want to buy for a 23 pound and American Nail Care Products,Features:{" +
+                "    [" +
+                "        Item Weight, Country of Origin" +
+                "    ]" +
+                "}" +
+                "Response:[ Item Weight, Country of Origin]";
+
+
+        String attributeResponseFromChatGPT = chatGPTService.sendRequestToChatGPT(message, manipulatedPrompt);
+
+        String cleanedResponse = attributeResponseFromChatGPT.substring(1, attributeResponseFromChatGPT.length() - 1).trim();
+
+        String[] attributeArray = cleanedResponse.split(",\\s*\"?");
+
+        List<String> attributes = Arrays.asList(attributeArray);
+        return attributes;
+
+    }
+
 }

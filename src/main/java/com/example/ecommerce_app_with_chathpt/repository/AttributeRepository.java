@@ -13,7 +13,7 @@ public interface AttributeRepository extends MongoRepository<Attribute,String> {
 
     List<Attribute> findByCategory(Category category);
 
-    Attribute findByName(String key);
+    Optional<Attribute> findByName(String key);
 
     Optional<Attribute> findByCategoryAndName(Category category , String key);
 
