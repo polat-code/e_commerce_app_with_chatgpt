@@ -5,6 +5,7 @@ import com.example.ecommerce_app_with_chathpt.config.OpenAIConfig;
 
 import com.example.ecommerce_app_with_chathpt.model.*;
 import com.example.ecommerce_app_with_chathpt.model.dto.request.ChatGPTRequest;
+import com.example.ecommerce_app_with_chathpt.model.dto.response.CartResponse;
 import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatGPTResponse;
 import com.example.ecommerce_app_with_chathpt.model.dto.response.ChatResponse;
 import com.example.ecommerce_app_with_chathpt.model.dto.response.ProductResponse;
@@ -96,8 +97,8 @@ public class BotService {
         }
         else if(intent.equals("show cart"))
         {
-            UserCart userCart = userCartService.getByUserId(connectedUser).get();
-            System.out.println(userCart.getCartProducts());
+            CartResponse cartResponse = userCartService.getByUserId(connectedUser);
+            System.out.println(cartResponse.getCartProducts());
             userChatService.setStateForCart(chatId);
 
         }

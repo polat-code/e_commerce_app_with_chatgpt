@@ -4,6 +4,8 @@ import com.example.ecommerce_app_with_chathpt.model.CartProduct;
 import com.example.ecommerce_app_with_chathpt.model.Product;
 import com.example.ecommerce_app_with_chathpt.model.User;
 import com.example.ecommerce_app_with_chathpt.model.UserCart;
+import com.example.ecommerce_app_with_chathpt.model.dto.response.CartProductResponse;
+import com.example.ecommerce_app_with_chathpt.model.dto.response.CartResponse;
 import com.example.ecommerce_app_with_chathpt.repository.UserCartRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @AllArgsConstructor
@@ -205,8 +208,25 @@ public class UserCartService {
 
 
 
-    public Optional<UserCart> getByUserId(Principal connectedUser) {
+    public CartResponse getByUserId(Principal connectedUser) {
+
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
-        return userCartRepository.findUserCartByUser_Id(user.getId());
+
+        UserCart userCart = userCartRepository.findUserCartByUser_Id(user.getId()).orElseThrow(() -> new RuntimeException("Cart not found for user."));
+        CartResponse cartResponse = CartResponse.builder()
+                .cartId(userCart.getId())
+                .cartProducts(userCart.getCartProducts().stream()
+                        .map(product -> new CartProductResponse(
+                                product.getProduct().getId(),
+                                product.getProduct().getBrand(),
+                                product.getProduct().getTitle(),
+                                product.getProduct().getCategory(),
+                                product.getQuantity(),
+                                product.getTotalPrice()))
+                        .collect(Collectors.toList()))
+                .totalPrice(userCart.getTotalPrice())
+                .build();
+
+        return cartResponse;
     }
 }
