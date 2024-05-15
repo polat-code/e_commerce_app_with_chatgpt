@@ -13,12 +13,10 @@ import lombok.NoArgsConstructor;
 public class CartProductResponse {
 
     private String id;
-
     private String brand;
-
     private String title;
-
     private Category category;
+    private double unitPrice;
     private int quantity;
     private double totalPrice;
 

@@ -41,4 +41,5 @@ public class Product {
     @Field
     private String thumbnailImage;
 
+
 }

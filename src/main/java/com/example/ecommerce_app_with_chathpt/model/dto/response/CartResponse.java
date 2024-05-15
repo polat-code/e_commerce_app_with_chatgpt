@@ -11,8 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CartResponse {
+
     private String cartId;
     private double totalPrice;
     private List<CartProductResponse> cartProducts;
-    private String userId;
+
 }

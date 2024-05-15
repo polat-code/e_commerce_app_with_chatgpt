@@ -20,6 +20,7 @@ public class CartProduct {
     private int quantity;
     private Date creationTime;
     private Date updateTime;
+    private Double unitPrice;
     private Double totalPrice;
 
 }

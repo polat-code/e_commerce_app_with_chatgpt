@@ -25,7 +25,7 @@ public class MessageService {
     public ChatResponse sendMessage(Principal connectedUser, String chatId, String message) throws JsonProcessingException {
         addMessageToChat(chatId,message);
         ChatState stateOfChat = getStateOfMessage(chatId);
-        System.out.println(message);
+
         ChatResponse chatEntityResponse = new ChatResponse() ;
         String response= "";
         if (stateOfChat.equals(ChatState.INITIAL)){
@@ -73,11 +73,10 @@ public class MessageService {
     private void addMessageToChat(String chatId, String message){
 
         ChatResponse chatResponse = ChatResponse.builder()
-                .messageType(MessageType.botMessage)
+                .messageType(MessageType.user)
                 .message(message)
                 .build();
         addChatEntityToUserChat(chatId, chatResponse);
-
 
     }
 

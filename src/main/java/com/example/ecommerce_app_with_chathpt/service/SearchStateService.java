@@ -82,7 +82,9 @@ public class SearchStateService {
                 "3. Request: \"I'd like to purchase product 1.\"\n" +
                 "   Output: {\"index\": 1, \"quantity\": 1}\n" +
                 "4. Request: \"Can I get 4 of product 9?\"\n" +
-                "   Output: {\"index\": 9, \"quantity\": 4}";
+                "   Output: {\"index\": 9, \"quantity\": 4}"+
+                "5. Request: \"I want t buy 4 of second product?\"\n" +
+                "   Output: {\"index\": 2, \"quantity\": 4}";
 
 
         String buyProductResponseFromGpt = chatGPTService.sendRequestToChatGPT(message, prompt);

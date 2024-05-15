@@ -221,6 +221,7 @@ public class UserCartService {
                                 product.getProduct().getBrand(),
                                 product.getProduct().getTitle(),
                                 product.getProduct().getCategory(),
+                                product.getProduct().getPrice(),
                                 product.getQuantity(),
                                 product.getTotalPrice()))
                         .collect(Collectors.toList()))

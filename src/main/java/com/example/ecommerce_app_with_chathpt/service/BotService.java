@@ -48,10 +48,10 @@ public class BotService {
     public String intentExtractionForInitialState(String message) throws JsonProcessingException {
         String manipulatedMessage = "These are intents of my sentences = [search, login, register, show cart, other]. If the intent of the message I give you is one of these, return just the intent of that sentence."
                 + "\nExample: 'I want to search for books.' Output: search"
-                + "\nExample: 'How do I log in to my account?' Output: login"
-                + "\nExample: 'I need to register for a new account.' Output: register"
+                + "\nExample: 'Show me books.' Output: search"
+                + "\nExample: 'List books related to sci-fic.' Output: search"
                 + "\nExample: 'Tell me more about your services.' Output: other"
-                + "\nExample: 'Show my cart'";
+                + "\nExample: 'Show my cart' Output: show cart";
 
         ChatGPTRequest request = new ChatGPTRequest(openAIConfig.getOpenai_model(),message,manipulatedMessage);
         ChatGPTResponse chatGPTResponse = restTemplate.postForObject(openAIConfig.getOpenai_api_url(), request, ChatGPTResponse.class);
@@ -66,6 +66,7 @@ public class BotService {
                 + "\nExample: 'Do not show products with GTX2060' Output: remove feature"
                 + "\nExample: 'I want to add fourth product to my cart' Output: remove feature"
                 + "\nExample: 'I want to buy second product.' Output: buy product"
+                + "\nExample: 'Show my cart' Output: show cart"
                 + "\nExample: 'I want to exit.' Output: exit";
 
 
@@ -89,7 +90,9 @@ public class BotService {
         else if(intent.equals("search"))
         {
             chatEntityResponse = searchService.searchByRequest(message, chatId);
+
             userChatService.setStateForSearch(chatId);
+
         }
         else if(intent.equals("register"))
         {
@@ -149,8 +152,9 @@ public class BotService {
             Optional<Product> product = productService.getProductById(productResponse.getProductId());
 
             userCartService.addProductToUserCart(connectedUser, product.get(), buyProductResponseToMapper.getQuantity());
-            
-
+            chatEntityResponse.setMessageType(MessageType.botMessage);
+            chatEntityResponse.setMessage(buyProductResponseToMapper.getIndex() +" Product added to cart by quantity " + buyProductResponseToMapper.getQuantity());
+            System.out.println(chatEntityResponse);
         }
         else if(intent.equals("add to cart"))
         {
