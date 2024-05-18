@@ -122,19 +122,13 @@ public class BotService {
 
         }
 
-        else if(intent.equals("remove feature"))
-        {
+        else if(intent.equals("remove feature")) {
             //TODO Should be removed but it did not remove
             Optional<UserChat> userChat = userChatService.getUserChatById(chatId);
 
-            List<GptAttributeAndAttributeValuesJsonResponseToMapper> attributeValueList = searchStateService.removeAttributes(message, userChat.get().getAttributeValues());
-            List<AttributeValue> currentAttributeValues = userChat.get().getAttributeValues();
-            List<AttributeValue> featuresToBeRemoved = productSearchService.mapAttributeValues(attributeValueList, userChat.get().getCategory());
-            currentAttributeValues.removeIf(featuresToBeRemoved::contains);
 
-            userChatService.setAttributeValuesAndCategoryOfChat(chatId,currentAttributeValues,userChat.get().getCategory());
-            return productSearchService.searchProduct(userChat.get().getCategory(), currentAttributeValues);
         }
+
         else if(intent.equals("add feature"))
         {
             //TODO Should be implemented

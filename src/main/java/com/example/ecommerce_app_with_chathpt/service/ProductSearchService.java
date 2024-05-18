@@ -22,8 +22,6 @@ public class ProductSearchService {
 
     public ChatResponse searchProduct(Category category,List<AttributeValue> attributeValues){
 
-
-
         List<Product>  foundProducts = productService.getAllProductsByCategoryAndAttributeValue(category.getId(),
                 attributeValues.stream().map(AttributeValue::getId).collect(Collectors.toList()));
 
@@ -31,28 +29,10 @@ public class ProductSearchService {
     }
 
 
-    public List<AttributeValue> mapAttributeValues(List<GptAttributeAndAttributeValuesJsonResponseToMapper> gptAttributeAndAttributeValuesJsonResponseToMappers,Category category){
-        List<AttributeValue> attributeValues = new ArrayList<>();
-        for (GptAttributeAndAttributeValuesJsonResponseToMapper gptAttributeAndAttributeValuesJsonResponseToMapper : gptAttributeAndAttributeValuesJsonResponseToMappers ){
-            String key = gptAttributeAndAttributeValuesJsonResponseToMapper.getKey();
-
-            List<String> values = gptAttributeAndAttributeValuesJsonResponseToMapper.getValues();
-            for (String value: values){
-                Optional<Attribute> optionalAttribute = attributeService.findByCategoryAndName(category, key);
-                if (optionalAttribute.isPresent()) {
-                    Optional<AttributeValue> attributeValue = attributeValueService.findByAttributeAndValue(optionalAttribute.get(),value);
-                    attributeValue.ifPresent(attributeValues::add);
-                }
-            }
-        }
-        return attributeValues;
-    }
-
 
     private ChatResponse productToChatResponse(List<Product> products){
 
-
-        ChatResponse productChatResponse = ChatResponse.<List<ProductResponse>>builder()
+        return ChatResponse.<List<ProductResponse>>builder()
                 .messageType(MessageType.productList)
                 .productList(products.stream().map((product -> ProductResponse.builder()
                         .title(product.getTitle())
@@ -64,7 +44,6 @@ public class ProductSearchService {
                         .category(product.getCategory())
                         .build()))
                 .collect(Collectors.toList())).build();
-        return productChatResponse;
     }
 
 
